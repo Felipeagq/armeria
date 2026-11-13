@@ -122,4 +122,12 @@ const FACTORIES = {
 } satisfies Record<string, (color: C) => THREE.Material>;
 
 export type MatKey = keyof typeof FACTORIES;
-export const createMat = (key: MatKey, color: C): THREE.Material => FACTORIES[key](color);
+/**
+ * Los acabados oscuros (negro, gris lobo…) se oscurecen un poco más: un arma negra real casi no devuelve
+ * albedo, lo que se ve son los brillos de los reflejos. Los colores claros (tierra, ártico…) no se tocan.
+ */
+const realisticTint = (color: C): THREE.Color => {
+  const c = new THREE.Color(color);
+  return c.getHSL({ h: 0, s: 0, l: 0 }).l < 0.25 ? c.multiplyScalar(0.6) : c;
+};
+export const createMat = (key: MatKey, color: C): THREE.Material => FACTORIES[key](realisticTint(color));

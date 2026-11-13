@@ -62,19 +62,19 @@ export class Viewer {
     const r = new THREE.WebGLRenderer({ antialias: true });
     r.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
-    r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.0;
+    r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.1;
     container.prepend(r.domElement);
     this.renderer = r;
 
     const s = this.scene;
     s.background = (() => {
       const c = document.createElement('canvas'); c.width = 64; c.height = 512; const x = c.getContext('2d')!;
-      const g = x.createLinearGradient(0, 0, 0, 512); g.addColorStop(0, '#2a2c31'); g.addColorStop(0.55, '#1a1b1f'); g.addColorStop(1, '#111214');
+      const g = x.createLinearGradient(0, 0, 0, 512); g.addColorStop(0, '#4b4f58'); g.addColorStop(0.55, '#2c2f35'); g.addColorStop(1, '#17181b');
       x.fillStyle = g; x.fillRect(0, 0, 64, 512);
       const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
     })();
     s.environment = new THREE.PMREMGenerator(r).fromScene(studioScene(), 0.02).texture;
-    s.environmentIntensity = 0.85;
+    s.environmentIntensity = 1.15;
 
     this.controls = new OrbitControls(this.camera, r.domElement);
     Object.assign(this.controls, { enableDamping: true, dampingFactor: 0.08, minDistance: 0.6, maxDistance: 60, autoRotateSpeed: 1.4 });
@@ -88,7 +88,7 @@ export class Viewer {
     this.ground = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), new THREE.ShadowMaterial({ opacity: 0.42 }));
     this.ground.rotation.x = -Math.PI / 2; this.ground.receiveShadow = true; s.add(this.ground);
     this.grid = new THREE.GridHelper(60, 120, '#383b42', '#24262b');
-    (this.grid.material as THREE.Material).transparent = true; (this.grid.material as THREE.Material).opacity = 0.5;
+    (this.grid.material as THREE.Material).transparent = true; (this.grid.material as THREE.Material).opacity = 0.22;
     s.add(this.grid, this.buildGroup, this.markerGroup);
 
     // Post-proceso: oclusión ambiental (GTAO) para el contacto entre piezas
