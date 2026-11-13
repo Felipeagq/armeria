@@ -29,7 +29,7 @@ export default function Viewport() {
     const el = stageRef.current; if (!el) return;
     const v = new Viewer(el, {
       // Al tocar una pieza en el visor se muestra «En el lienzo» (en móvil, donde están sus colores)
-      onPick: id => { const s = useStore.getState(); s.select(s.selected === id && id ? null : id); if (id) s.setPanel('build'); setHint(false); },
+      onPick: id => { const s = useStore.getState(); s.select(s.selected === id && id ? null : id); if (id && s.panel !== 'ficha') s.setPanel('build'); setHint(false); },
       onHover: id => useStore.getState().hover(id),
       onBounds: mm => useStore.getState().setLength(mm),
     });

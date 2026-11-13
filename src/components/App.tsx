@@ -10,6 +10,7 @@ import Header from './Header';
 import Catalog from './Catalog';
 import Viewport from './Viewport';
 import Inspector from './Inspector';
+import Ficha from './Ficha';
 import { ExportModal, ImportModal, ModelsModal, PickerModal } from './Modals';
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
@@ -127,10 +128,12 @@ export default function App() {
         <Catalog />
         <Viewport />
         <Inspector />
+        <Ficha />
         {/* Solo visible en móvil (CSS): alterna el panel que se muestra junto al visor */}
         <nav className="tabs" aria-label="Paneles">
+          <button aria-pressed={panel === 'ficha'} onClick={() => useStore.getState().setPanel('ficha')}>Ficha</button>
           <button aria-pressed={panel === 'parts'} onClick={() => useStore.getState().setPanel('parts')}>Catálogo</button>
-          <button aria-pressed={panel === 'build'} onClick={() => useStore.getState().setPanel('build')}>En el lienzo <b>{pieceCount}</b></button>
+          <button aria-pressed={panel === 'build'} onClick={() => useStore.getState().setPanel('build')}>Lienzo <b>{pieceCount}</b></button>
         </nav>
       </div>
       {modal === 'picker' && <PickerModal />}

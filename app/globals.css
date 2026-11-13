@@ -249,13 +249,15 @@
   /* Móvil (y móvil apaisado): un solo panel con pestañas */
   @media (max-width:640px), (max-height:520px) and (max-width:960px){
     .layout{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(180px,44fr) auto minmax(0,56fr);grid-template-areas:"stage" "tabs" "panel"}
-    .tabs{grid-area:tabs;display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:6px 10px;background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-    .tabs button{display:flex;justify-content:center;align-items:center;gap:8px;padding:9px 10px;border-radius:9px;border:1px solid transparent;color:var(--muted);font-weight:500;font-size:14px}
+    .tabs{grid-area:tabs;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:6px 10px;background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .tabs button{display:flex;justify-content:center;align-items:center;gap:7px;padding:9px 6px;border-radius:9px;border:1px solid transparent;color:var(--muted);font-weight:500;font-size:13.5px}
     .tabs button b{font-family:var(--mono);font-weight:400;font-size:11px;color:var(--dim)}
     .tabs button[aria-pressed=true]{background:var(--panel2);border-color:var(--line2);color:var(--text)}
     .tabs button[aria-pressed=true]::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent)}
-    .catalog,.inspector{grid-area:panel;border:0}
-    .layout[data-panel=parts] .inspector,.layout[data-panel=build] .catalog{display:none}
+    .catalog,.inspector,.ficha{grid-area:panel;border:0}
+    .layout[data-panel=parts] :is(.inspector,.ficha),.layout[data-panel=build] :is(.catalog,.ficha),.layout[data-panel=ficha] :is(.catalog,.inspector){display:none}
+    .layout[data-panel=ficha] .ficha{display:flex}
+    .inspector .specs{display:none} /* la ficha ya tiene su propia pestaña */
     .pad{padding:10px 12px}
     .cats{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding:0 12px 10px} .cats::-webkit-scrollbar{display:none}
     .chip{flex:none;white-space:nowrap}
@@ -304,4 +306,30 @@
     .hint{bottom:56px}
     .modal{padding:8px}
     .sheet{max-height:calc(100vh - 16px);max-height:calc(100dvh - 16px)}
+  }
+
+  /* ═════════════ Vista «Ficha» (móvil): foto grande + datos clave + ficha completa ═════════════ */
+  .ficha{display:none;flex-direction:column;min-height:0;overflow-y:auto;background:var(--panel)}
+  .ficha > *{flex:none} /* sin esto el figure (overflow:hidden) se encoge a 0 dentro del contenedor con scroll */
+  .ficha .spfig{margin:0;border:0;border-radius:0;border-bottom:1px solid var(--line)}
+  .ficha .spfig img{aspect-ratio:16/10}
+  .fhead{padding:14px 16px 4px}
+  .fhead h2{margin:0;font-size:22px;line-height:1.15;font-weight:700;letter-spacing:.01em}
+  .fmaker{margin:4px 0 0;color:var(--muted);font-size:13px}
+  .fkeys{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:8px;padding:12px 16px 4px}
+  .fkey{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-width:0}
+  .fkey span{display:block;font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+  .fkey b{display:block;margin-top:3px;font-family:var(--mono);font-weight:500;font-size:12.5px;line-height:1.35;overflow-wrap:anywhere}
+  .fspecs{padding:6px 16px 0}
+  .fspecs dl{margin:0;display:flex;flex-direction:column}
+  .fspecs .sr{display:grid;grid-template-columns:110px 1fr;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:13.5px;line-height:1.4}
+  .fspecs dt{color:var(--muted)} .fspecs dd{margin:0}
+  .fspecs .src{font-size:11px;color:var(--dim);line-height:1.45;margin:8px 0 0}
+  .fnote{margin:14px 16px;color:var(--muted);font-size:13.5px}
+  .factions{display:flex;flex-wrap:wrap;gap:8px;padding:16px 16px calc(20px + env(safe-area-inset-bottom))}
+  .factions .ghost{flex:1 1 140px}
+  /* Móvil vertical, pestaña Ficha: el 3D se queda como vista previa compacta y la ficha ocupa casi toda la pantalla */
+  @media (max-width:640px) and (orientation:portrait){
+    .layout[data-panel=ficha]{grid-template-rows:minmax(140px,26fr) auto minmax(0,74fr)}
+    .layout[data-panel=ficha] :is(.hud,.hint){display:none}
   }

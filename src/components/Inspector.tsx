@@ -2,34 +2,11 @@
 import { useState } from 'react';
 import { useStore } from '@/state/store';
 import { PLATFORMS, partById, tintable } from '@/three/registry';
-import { COLOR_NAMES, COLORS, SLOT_LABEL, type ColorKey, type Platform, type Specs } from '@/three/types';
+import { COLOR_NAMES, COLORS, SLOT_LABEL, type ColorKey, type Platform } from '@/three/types';
 import { getViewer } from '@/three/engine/viewerRef';
-import { photoFor, photoUrl } from '@/three/data/photos';
 import { usePartThumb } from './useThumb';
+import { PhotoFigure, SpecRows, SpecSource } from './Specs';
 import { IconClose, IconGun } from './icons';
-
-const SPEC_LABELS: [keyof Specs, string][] = [
-  ['calibre', 'Calibre'], ['peso', 'Peso'], ['cañon', 'Cañón'], ['sistema', 'Sistema / cerrojo'], ['cadencia', 'Cadencia'],
-  ['velocidad', 'Velocidad inicial'], ['alcance', 'Alcance eficaz'], ['cargador', 'Cargador'], ['airsoft', 'Réplica airsoft'], ['extra', 'Notas'],
-];
-
-function PhotoFigure({ pid, name }: { pid: string; name: string }) {
-  const photo = photoFor(pid);
-  if (!photo) return null;
-  const real = photo.kind === 'real';
-  return (
-    // key: al cambiar de modelo se descarta el estado «oculta» de una foto que falló al cargar
-    <figure className="spfig" key={pid}>
-      <img src={photoUrl(photo)} alt={`${name}: foto ${real ? 'del arma real' : 'de la réplica de airsoft'}`} loading="lazy" decoding="async"
-        onError={e => e.currentTarget.closest('figure')?.setAttribute('hidden', '')} />
-      <figcaption>
-        {real ? 'Foto del arma real' : 'Foto de la réplica de airsoft'} · {photo.author} ·{' '}
-        {photo.licenseUrl ? <a href={photo.licenseUrl} target="_blank" rel="noopener noreferrer">{photo.license}</a> : photo.license} ·{' '}
-        <a href={photo.source} target="_blank" rel="noopener noreferrer">Wikimedia Commons</a>
-      </figcaption>
-    </figure>
-  );
-}
 
 function SpecsPanel({ P, pid }: { P: Platform; pid: string }) {
   const [open, setOpen] = useState(true);
@@ -38,12 +15,8 @@ function SpecsPanel({ P, pid }: { P: Platform; pid: string }) {
     <details className="specs" open={open} onToggle={e => setOpen(e.currentTarget.open)}>
       <summary><span>Ficha técnica</span><em>{P.maker}</em></summary>
       <PhotoFigure pid={pid} name={P.name} />
-      <dl>
-        {SPEC_LABELS.filter(([k]) => P.specs?.[k]).map(([k, label]) => (
-          <div className="sr" key={k}><dt>{label}</dt><dd>{P.specs?.[k]}</dd></div>
-        ))}
-      </dl>
-      <p className="src">Datos del arma real. Fuente: {P.specs.fuente ?? '—'}. Los valores varían según configuración y munición.</p>
+      <SpecRows P={P} />
+      <SpecSource P={P} />
     </details>
   );
 }

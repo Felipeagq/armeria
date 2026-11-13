@@ -9,7 +9,7 @@ export type Quality = 'high' | 'normal';
 export type ViewName = 'side' | 'three' | 'top';
 type Modal = null | 'export' | 'picker' | 'models' | 'import';
 /** Panel visible bajo el visor en pantallas pequeñas (en escritorio se ven los dos). */
-export type Panel = 'parts' | 'build';
+export type Panel = 'ficha' | 'parts' | 'build';
 
 interface Store {
   build: BuildState;
@@ -74,7 +74,7 @@ export const useStore = create<Store>((set, get) => {
     past: [], future: [], added: null,
     selected: null, hovered: null,
     activeCat: 'all', search: '',
-    explode: false, spin: false, quality: 'high', panel: 'parts',
+    explode: false, spin: false, quality: 'high', panel: 'ficha',
     modal: null, lengthMm: 0, registryVersion: 0, toast: null,
 
     hydrate: raw => {
