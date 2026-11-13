@@ -8,6 +8,8 @@ import { defaultState, migrateParts, save, validState } from './build';
 export type Quality = 'high' | 'normal';
 export type ViewName = 'side' | 'three' | 'top';
 type Modal = null | 'export' | 'picker' | 'models' | 'import';
+/** Panel visible bajo el visor en pantallas pequeñas (en escritorio se ven los dos). */
+export type Panel = 'parts' | 'build';
 
 interface Store {
   build: BuildState;
@@ -22,6 +24,7 @@ interface Store {
   explode: boolean;
   spin: boolean;
   quality: Quality;
+  panel: Panel;
   modal: Modal;
   lengthMm: number;
   registryVersion: number;
@@ -43,6 +46,7 @@ interface Store {
   toggleExplode: () => void;
   toggleSpin: () => void;
   setQuality: (q: Quality) => void;
+  setPanel: (p: Panel) => void;
   openModal: (m: Modal) => void;
   setLength: (mm: number) => void;
   bumpRegistry: () => void;
@@ -70,7 +74,7 @@ export const useStore = create<Store>((set, get) => {
     past: [], future: [], added: null,
     selected: null, hovered: null,
     activeCat: 'all', search: '',
-    explode: false, spin: false, quality: 'high',
+    explode: false, spin: false, quality: 'high', panel: 'parts',
     modal: null, lengthMm: 0, registryVersion: 0, toast: null,
 
     hydrate: raw => {
@@ -138,6 +142,7 @@ export const useStore = create<Store>((set, get) => {
     toggleExplode: () => set(s => ({ explode: !s.explode })),
     toggleSpin: () => set(s => ({ spin: !s.spin })),
     setQuality: quality => { try { localStorage.setItem('armeria3d:quality', quality); } catch { /* */ } set({ quality }); },
+    setPanel: panel => set({ panel }),
     openModal: modal => set({ modal }),
     setLength: lengthMm => set({ lengthMm }),
     bumpRegistry: () => set(s => ({ registryVersion: s.registryVersion + 1 })),

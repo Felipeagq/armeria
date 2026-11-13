@@ -1,7 +1,7 @@
 'use client';
 import { useStore } from '@/state/store';
 import { PLATFORMS } from '@/three/registry';
-import { IconChevron, IconDownload, IconRedo, IconReset, IconUndo, Logo } from './icons';
+import { IconChevron, IconCube, IconDownload, IconRedo, IconReset, IconUndo, Logo } from './icons';
 
 export default function Header() {
   const build = useStore(s => s.build);
@@ -30,8 +30,9 @@ export default function Header() {
       <button className="iconbtn" title="Deshacer (Ctrl+Z)" disabled={!canUndo} onClick={undo}><IconUndo /></button>
       <button className="iconbtn" title="Rehacer (Ctrl+Shift+Z)" disabled={!canRedo} onClick={redo}><IconRedo /></button>
       <button className="iconbtn" title="Restablecer build" onClick={reset}><IconReset /></button>
-      <button className="ghost" title="Importar y gestionar modelos GLB" onClick={() => openModal('models')}>Modelos 3D</button>
-      <button className="primary" onClick={() => openModal('export')}><IconDownload />Exportar PNG</button>
+      {/* En pantallas estrechas solo se muestra el icono (.lbl se oculta); title/aria-label mantienen el nombre accesible */}
+      <button className="ghost" title="Importar y gestionar modelos GLB" aria-label="Modelos 3D" onClick={() => openModal('models')}><IconCube /><span className="lbl">Modelos 3D</span></button>
+      <button className="primary" title="Exportar PNG" aria-label="Exportar PNG" onClick={() => openModal('export')}><IconDownload /><span className="lbl">Exportar PNG</span></button>
     </header>
   );
 }

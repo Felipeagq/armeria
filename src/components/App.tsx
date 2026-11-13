@@ -48,6 +48,8 @@ async function loadCustomModels(): Promise<GLB.ModelRecord[]> {
 export default function App() {
   const modal = useStore(s => s.modal);
   const toast = useStore(s => s.toast);
+  const panel = useStore(s => s.panel);
+  const pieceCount = useStore(s => Object.keys(s.build.parts).length + 1);
   const [records, setRecords] = useState<GLB.ModelRecord[]>([]);
   const [importFile, setImportFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
@@ -121,10 +123,15 @@ export default function App() {
   return (
     <div className="app">
       <Header />
-      <div className={`layout ${dragging ? 'dragging' : ''}`}>
+      <div className={`layout ${dragging ? 'dragging' : ''}`} data-panel={panel}>
         <Catalog />
         <Viewport />
         <Inspector />
+        {/* Solo visible en móvil (CSS): alterna el panel que se muestra junto al visor */}
+        <nav className="tabs" aria-label="Paneles">
+          <button aria-pressed={panel === 'parts'} onClick={() => useStore.getState().setPanel('parts')}>Catálogo</button>
+          <button aria-pressed={panel === 'build'} onClick={() => useStore.getState().setPanel('build')}>En el lienzo <b>{pieceCount}</b></button>
+        </nav>
       </div>
       {modal === 'picker' && <PickerModal />}
       {modal === 'export' && <ExportModal />}

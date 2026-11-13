@@ -61,12 +61,12 @@ export default function Inspector() {
   const build = useStore(s => s.build);
   const baseSelected = useStore(s => s.selected === 'base');
   useStore(s => s.registryVersion);
-  const { select, hover, setCat, setSearch } = useStore.getState();
+  const { select, hover, setCat, setSearch, setPanel } = useStore.getState();
   const P = PLATFORMS[build.platform];
   const n = Object.keys(build.parts).length;
 
   const focusCategory = (type: string) => {
-    setCat(type); setSearch('');
+    setCat(type); setSearch(''); setPanel('parts'); // en móvil, saltar al catálogo
     getViewer()?.showMarkers(type); setTimeout(() => getViewer()?.showMarkers(null), 1600);
   };
 

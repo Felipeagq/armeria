@@ -28,7 +28,8 @@ export default function Viewport() {
   useEffect(() => {
     const el = stageRef.current; if (!el) return;
     const v = new Viewer(el, {
-      onPick: id => { const s = useStore.getState(); s.select(s.selected === id && id ? null : id); setHint(false); },
+      // Al tocar una pieza en el visor se muestra «En el lienzo» (en móvil, donde están sus colores)
+      onPick: id => { const s = useStore.getState(); s.select(s.selected === id && id ? null : id); if (id) s.setPanel('build'); setHint(false); },
       onHover: id => useStore.getState().hover(id),
       onBounds: mm => useStore.getState().setLength(mm),
     });
@@ -54,7 +55,10 @@ export default function Viewport() {
 
   return (
     <section className="stage" ref={stageRef} onPointerDown={() => setHint(false)} onWheel={() => setHint(false)}>
-      <div className="hint" style={{ opacity: hint ? 1 : 0 }}>Arrastra para orbitar · Rueda para zoom · Clic derecho para desplazar · Clic en una pieza para seleccionarla</div>
+      <div className="hint" style={{ opacity: hint ? 1 : 0 }}>
+        <span className="h-mouse">Arrastra para orbitar · Rueda para zoom · Clic derecho para desplazar · Clic en una pieza para seleccionarla</span>
+        <span className="h-touch">Arrastra para orbitar · Pellizca para zoom · Dos dedos para desplazar · Toca una pieza para seleccionarla</span>
+      </div>
       <div className="hud">
         <div className="glass stats">
           <div className="stat"><div className="k">Longitud</div><div className="v">{lengthMm ? `${lengthMm} mm` : '—'}</div></div>

@@ -8,6 +8,7 @@ export const IconDownload = (p: P) => <svg viewBox="0 0 24 24" {...s} strokeWidt
 export const IconClose = (p: P) => <svg viewBox="0 0 24 24" {...s} {...p}><path d="M6 6l12 12M18 6 6 18" /></svg>;
 export const IconSearch = (p: P) => <svg viewBox="0 0 24 24" {...s} {...p}><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>;
 export const IconChevron = (p: P) => <svg viewBox="0 0 24 24" {...s} {...p}><path d="m6 9 6 6 6-6" /></svg>;
+export const IconCube = (p: P) => <svg viewBox="0 0 24 24" {...s} {...p}><path d="M21 8 12 3 3 8v8l9 5 9-5z" /><path d="m3 8 9 5 9-5M12 13v8" /></svg>;
 export const IconGun = (p: P) => <svg viewBox="0 0 24 24" fill="none" stroke="#8d9097" strokeWidth={1.6} width={26} height={26} {...p}><path d="M3 9h15l2-2h1v4h-4l-2 2h-3l-1 6H7l1-6H3z" /></svg>;
 export const Logo = () => (
   <svg viewBox="0 0 32 32" fill="none" aria-hidden>
