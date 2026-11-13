@@ -1,7 +1,9 @@
 'use client';
 // Vista «Ficha» (móvil): foto grande + datos clave + ficha completa del modelo seleccionado.
 // En escritorio y tableta no se muestra (CSS); allí la ficha vive dentro del inspector.
+import Link from 'next/link';
 import { useStore } from '@/state/store';
+import { ammoForCalibre } from '@/three/data/ammo';
 import { PLATFORMS } from '@/three/registry';
 import type { Specs } from '@/three/types';
 import { PhotoFigure, SpecRows, SpecSource } from './Specs';
@@ -26,7 +28,12 @@ export default function Ficha() {
       {P.specs ? (<>
         {keys.length > 0 && (
           <div className="fkeys">
-            {keys.map(([k, label]) => <div className="fkey" key={k}><span>{label}</span><b>{P.specs?.[k]}</b></div>)}
+            {keys.map(([k, label]) => {
+              const ammo = k === 'calibre' ? ammoForCalibre(P.specs?.[k])[0] : undefined;
+              return ammo
+                ? <Link className="fkey fkey-link" key={k} href={`/balas/${ammo.id}/`} title={`Ver la ficha de ${ammo.name}`}><span>{label}</span><b>{P.specs?.[k]}</b></Link>
+                : <div className="fkey" key={k}><span>{label}</span><b>{P.specs?.[k]}</b></div>;
+            })}
           </div>
         )}
         <div className="fspecs"><SpecRows P={P} /><SpecSource P={P} /></div>
@@ -36,6 +43,7 @@ export default function Ficha() {
       <div className="factions">
         <button className="ghost" onClick={() => openModal('picker')}>Cambiar modelo</button>
         <button className="ghost" onClick={() => setPanel('parts')}>Ver piezas compatibles</button>
+        <Link className="ghost" href="/balas/">Ver munición</Link>
       </div>
     </aside>
   );

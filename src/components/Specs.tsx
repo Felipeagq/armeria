@@ -1,6 +1,8 @@
 'use client';
 // Piezas compartidas de la ficha técnica: la usan el inspector (escritorio/tableta) y la vista «Ficha» (móvil).
+import Link from 'next/link';
 import type { Platform, Specs } from '@/three/types';
+import { ammoForCalibre } from '@/three/data/ammo';
 import { photoFor, photoUrl } from '@/three/data/photos';
 
 export const SPEC_LABELS: [keyof Specs, string][] = [
@@ -11,11 +13,18 @@ export const SPEC_LABELS: [keyof Specs, string][] = [
 /** Filas de la ficha que tienen dato para esta plataforma. */
 export const specRows = (P: Platform) => SPEC_LABELS.filter(([k]) => P.specs?.[k]);
 
+/** Enlaces a la ficha de munición de los cartuchos que menciona el texto de calibre. */
+function AmmoLinks({ calibre }: { calibre?: string }) {
+  const list = ammoForCalibre(calibre);
+  if (!list.length) return null;
+  return <span className="ammrow">{list.map(c => <Link key={c.id} className="ammlink" href={`/balas/${c.id}/`}>Ver {c.short} ›</Link>)}</span>;
+}
+
 export function SpecRows({ P }: { P: Platform }) {
   return (
     <dl>
       {specRows(P).map(([k, label]) => (
-        <div className="sr" key={k}><dt>{label}</dt><dd>{P.specs?.[k]}</dd></div>
+        <div className="sr" key={k}><dt>{label}</dt><dd>{P.specs?.[k]}{k === 'calibre' && <AmmoLinks calibre={P.specs?.[k]} />}</dd></div>
       ))}
     </dl>
   );

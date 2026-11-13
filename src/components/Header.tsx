@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useStore } from '@/state/store';
 import { PLATFORMS } from '@/three/registry';
 import { IconChevron, IconCube, IconDownload, IconRedo, IconReset, IconUndo, Logo } from './icons';
@@ -30,6 +31,7 @@ export default function Header() {
       <button className="iconbtn" title="Deshacer (Ctrl+Z)" disabled={!canUndo} onClick={undo}><IconUndo /></button>
       <button className="iconbtn" title="Rehacer (Ctrl+Shift+Z)" disabled={!canRedo} onClick={redo}><IconRedo /></button>
       <button className="iconbtn" title="Restablecer build" onClick={reset}><IconReset /></button>
+      <Link className="ghost hnav" href="/balas/" title="Enciclopedia de munición">Balas</Link>
       {/* En pantallas estrechas solo se muestra el icono (.lbl se oculta); title/aria-label mantienen el nombre accesible */}
       <button className="ghost" title="Importar y gestionar modelos GLB" aria-label="Modelos 3D" onClick={() => openModal('models')}><IconCube /><span className="lbl">Modelos 3D</span></button>
       <button className="primary" title="Exportar PNG" aria-label="Exportar PNG" onClick={() => openModal('export')}><IconDownload /><span className="lbl">Exportar PNG</span></button>

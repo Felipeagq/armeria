@@ -333,3 +333,50 @@
     .layout[data-panel=ficha]{grid-template-rows:minmax(140px,26fr) auto minmax(0,74fr)}
     .layout[data-panel=ficha] :is(.hud,.hint){display:none}
   }
+
+  /* ═════════════ Enciclopedia (páginas /balas): documentos con scroll normal ═════════════ */
+  .wikihead{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:5}
+  .wikihead .logo{color:inherit;text-decoration:none}
+  .wikihead nav{display:flex;gap:4px}
+  .wikihead nav a{padding:7px 12px;border-radius:9px;color:var(--muted);text-decoration:none;font-weight:500;font-size:14px;border:1px solid transparent}
+  .wikihead nav a:hover{color:var(--text)}
+  .wikihead nav a[aria-current=page]{background:var(--panel2);border-color:var(--line2);color:var(--text)}
+  .wikimain{max-width:880px;margin:0 auto;padding:20px 16px calc(40px + env(safe-area-inset-bottom))}
+  .wikimain h1{margin:6px 0 4px;font-size:28px;line-height:1.15}
+  .wikimain h2{margin:26px 0 8px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+  .wikilead{margin:0 0 18px;color:var(--muted);font-size:15px;line-height:1.5}
+  .wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+  .wcard{display:flex;flex-direction:column;gap:10px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px;color:inherit;text-decoration:none;transition:border-color .15s}
+  .wcard:hover{border-color:var(--accent)}
+  .wthumb{aspect-ratio:16/10;background:#e9e8e4;border-radius:8px;overflow:hidden}
+  .wthumb img{display:block;width:100%;height:100%;object-fit:contain}
+  .wcard b{display:block;font-size:16px}
+  .wcard span{display:block;color:var(--muted);font-size:13px;line-height:1.4;margin-top:2px}
+  .wcard small{display:block;font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:6px}
+  .crumbs{margin:0 0 4px} .crumbs a{color:var(--muted);text-decoration:none;font-size:14px} .crumbs a:hover{color:var(--accent)}
+  .wfig{margin:12px 0 16px;border-radius:12px}
+  .wfig img{aspect-ratio:16/10}
+  .wprose p{font-size:15px;line-height:1.65;margin:0 0 12px}
+  .wlist{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+  .wlist li{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px}
+  .wlist li span{color:var(--muted);font-size:12.5px;margin-left:6px}
+  .wikimain .fspecs{padding:0}
+  .wikimain .fspecs .sr{grid-template-columns:minmax(120px,210px) 1fr}
+  .wikimain .fkeys{padding:0 0 4px}
+  .wnav{display:flex;justify-content:space-between;gap:10px;margin-top:28px}
+  a.ghost{text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+  @media (max-width:640px){
+    .wikihead .logo small{display:none}
+    .wikimain h1{font-size:24px}
+    .wikimain .fspecs .sr{grid-template-columns:110px 1fr}
+  }
+
+  /* Enlaces a munición desde la ficha de cada arma */
+  .ammrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .ammlink{padding:2px 9px;border:1px solid var(--line2);border-radius:999px;font-size:11.5px;color:var(--accent2);text-decoration:none}
+  .ammlink:hover{border-color:var(--accent)}
+  .fkey-link{color:inherit;text-decoration:none;border-color:rgba(255,122,26,.35)} .fkey-link:hover{border-color:var(--accent)}
+  .fkey-link span::after{content:" ›";color:var(--accent)}
+  /* El enlace «Balas» de la cabecera (el texto no cabe en móvil: allí se llega desde la pestaña Ficha) */
+  header .hnav{width:auto;height:auto;padding:8px 14px}
+  @media (max-width:640px){ header .hnav{display:none} }
