@@ -1,5 +1,4 @@
-# Cabeceras HTTP que Amplify Hosting añade a cada respuesta.
-# (En una exportación estática, `headers()` de next.config no aplica: se configuran aquí.)
+# Cabeceras HTTP que Amplify Hosting añade a cada respuesta (se configuran aquí, no en next.config).
 customHeaders:
   - pattern: '**/*'
     headers:

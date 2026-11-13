@@ -15,8 +15,8 @@ npm ci
 npm run dev          # http://localhost:3010
 npm run lint         # ESLint (config de Next)
 npm run typecheck    # tsc --noEmit (modo estricto)
-npm run build        # exportación estática a out/
-npm start            # sirve out/ localmente
+npm run build        # build de producción (.next/)
+npm start            # sirve el build en http://localhost:3010 (requiere npm run build)
 ```
 
 ## Arquitectura
@@ -52,27 +52,15 @@ Decisiones principales:
 
 ## Despliegue en AWS Amplify Hosting
 
-El constructor se ejecuta por completo en el navegador, así que se publica como **sitio estático** (`output: 'export'`). Amplify lo sirve desde su CDN, sin funciones de servidor que mantener ni costes de cómputo.
+Se despliega como una app **Next.js estándar** (la plataforma `WEB_COMPUTE` que Amplify elige por defecto para Next.js). El constructor corre en el navegador, pero el build deja su salida en `.next/` y Amplify la sirve desde su CDN y su capa de cómputo.
 
 1. Sube el proyecto a un repositorio (GitHub, GitLab, Bitbucket o CodeCommit).
 2. En la consola de Amplify: **Create new app → Host web app**, elige el repositorio y la rama.
-3. Amplify detecta `amplify.yml` (build con `npm ci`, lint, typecheck y `next build`; artefactos en `out/`). Revisa que el **directorio de salida** sea `out`.
-4. **Plataforma:** la app debe desplegarse como estática (`WEB`). Si Amplify la detecta como Next.js SSR (`WEB_COMPUTE`), cámbiala:
-   ```bash
-   aws amplify update-app --app-id <APP_ID> --platform WEB
-   ```
-5. `customHttp.yml` aplica las cabeceras de seguridad (CSP, HSTS, `X-Frame-Options`, etc.) y la caché larga de `_next/static`.
-6. Opcional: en **Domain management**, añade tu dominio. Amplify emite el certificado TLS.
+3. Amplify detecta `amplify.yml` (build con `npm ci`, lint, typecheck y `next build`; artefactos en `.next/`). Revisa que el **directorio de salida** sea `.next`.
+4. `customHttp.yml` aplica las cabeceras de seguridad (CSP, HSTS, `X-Frame-Options`, etc.) y la caché larga de `_next/static`.
+5. Opcional: en **Domain management**, añade tu dominio. Amplify emite el certificado TLS.
 
-### Alternativa con AWS CLI
-
-```bash
-aws amplify create-app --name armeria-3d --platform WEB --repository <URL_REPO> --access-token <TOKEN_GIT>
-aws amplify create-branch --app-id <APP_ID> --branch-name main --stage PRODUCTION
-aws amplify start-job --app-id <APP_ID> --branch-name main --job-type RELEASE
-```
-
-Guarda el token del repositorio en un gestor de secretos y no lo subas al repositorio.
+> **No uses `output: 'export'` con esta configuración.** Un sitio estático (salida en `out/`) exige que la app de Amplify tenga plataforma `WEB`; con `WEB_COMPUTE` el deploy falla con `Can't find required-server-files.json in build output directory`. Si algún día prefieres estático: añade `output: 'export'` en `next.config.ts`, pon `baseDirectory: out` en `amplify.yml` y cambia la plataforma con `aws amplify update-app --app-id <APP_ID> --platform WEB`.
 
 ## Modelos 3D propios (GLB)
 

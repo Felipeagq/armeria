@@ -1,5 +1,5 @@
-# Especificación de build para AWS Amplify Hosting (sitio estático).
-# next.config.ts usa `output: 'export'`, así que el resultado es HTML/JS/CSS en `out/`.
+# Especificación de build para AWS Amplify Hosting (app Next.js estándar, plataforma WEB_COMPUTE).
+# next build deja el resultado en `.next/` (incluye required-server-files.json, que Amplify exige).
 version: 1
 frontend:
   phases:
@@ -14,7 +14,7 @@ frontend:
         - npm run typecheck
         - npm run build
   artifacts:
-    baseDirectory: out
+    baseDirectory: .next
     files:
       - '**/*'
   cache:
