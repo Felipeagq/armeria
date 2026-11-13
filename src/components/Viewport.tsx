@@ -1,9 +1,18 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { useStore } from '@/state/store';
 import { totalWeight } from '@/state/build';
 import { Viewer, type ViewName } from '@/three/engine/Viewer';
 import { setViewer } from '@/three/engine/viewerRef';
+
+/** Móvil: no hay visor 3D (la app es una enciclopedia). Misma condición que el modo «pestañas» de globals.css. */
+const COMPACT = '(max-width:640px), (max-height:520px) and (max-width:960px)';
+const isCompact = () => window.matchMedia(COMPACT).matches;
+const useCompact = () => useSyncExternalStore(
+  cb => { const mq = window.matchMedia(COMPACT); mq.addEventListener('change', cb); return () => mq.removeEventListener('change', cb); },
+  isCompact,
+  () => false,
+);
 
 const fmtWeight = (w: number) => (!w ? '—' : w >= 1000 ? `${(w / 1000).toFixed(2)} kg` : `${w} g`);
 
@@ -23,10 +32,11 @@ export default function Viewport() {
   const registryVersion = useStore(s => s.registryVersion);
   const { toggleExplode, toggleSpin, setQuality } = useStore.getState();
   const lastPlatform = useRef<string | null>(null);
+  const compact = useCompact();
 
-  // Ciclo de vida del visor
+  // Ciclo de vida del visor. En móvil no se crea (ni WebGL ni render); isCompact() evita crearlo un instante durante la hidratación.
   useEffect(() => {
-    const el = stageRef.current; if (!el) return;
+    const el = stageRef.current; if (!el || compact || isCompact()) return;
     const v = new Viewer(el, {
       // Al tocar una pieza en el visor se muestra «En el lienzo» (en móvil, donde están sus colores)
       onPick: id => { const s = useStore.getState(); s.select(s.selected === id && id ? null : id); if (id && s.panel !== 'ficha') s.setPanel('build'); setHint(false); },
@@ -36,7 +46,7 @@ export default function Viewport() {
     viewerRef.current = v; setViewer(v);
     const t = setTimeout(() => setHint(false), 9000);
     return () => { clearTimeout(t); setViewer(null); v.dispose(); viewerRef.current = null; lastPlatform.current = null; };
-  }, []);
+  }, [compact]);
 
   // Reconstruir cuando cambia el build (o se registran modelos GLB)
   useEffect(() => {
@@ -44,12 +54,12 @@ export default function Viewport() {
     v.setBuild(build, added);
     v.setHighlight(useStore.getState().selected, useStore.getState().hovered);
     if (lastPlatform.current !== build.platform) { v.setView('three', lastPlatform.current === null); lastPlatform.current = build.platform; }
-  }, [build, added, registryVersion]);
+  }, [build, added, registryVersion, compact]);
 
-  useEffect(() => { viewerRef.current?.setHighlight(selected, hovered); }, [selected, hovered]);
-  useEffect(() => { viewerRef.current?.setExplode(explode); }, [explode]);
-  useEffect(() => { viewerRef.current?.setAutoRotate(spin); }, [spin]);
-  useEffect(() => { viewerRef.current?.setQuality(quality); }, [quality]);
+  useEffect(() => { viewerRef.current?.setHighlight(selected, hovered); }, [selected, hovered, compact]);
+  useEffect(() => { viewerRef.current?.setExplode(explode); }, [explode, compact]);
+  useEffect(() => { viewerRef.current?.setAutoRotate(spin); }, [spin, compact]);
+  useEffect(() => { viewerRef.current?.setQuality(quality); }, [quality, compact]);
 
   const view = (n: ViewName) => viewerRef.current?.setView(n);
 
