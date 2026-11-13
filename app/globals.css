@@ -175,6 +175,12 @@
   .specs .sr{display:grid;grid-template-columns:96px 1fr;gap:8px;padding:5px 0;border-top:1px solid var(--line);font-size:12px}
   .specs dt{color:var(--muted)} .specs dd{margin:0;color:var(--text)}
   .specs .src{font-size:10.5px;color:var(--dim);margin:0 0 6px;line-height:1.4}
+  /* Foto del modelo: fondo claro para que se vean las armas negras (muchas fotos son PNG con fondo transparente) */
+  .spfig{margin:4px 0 8px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#e9e8e4}
+  .spfig[hidden]{display:none}
+  .spfig img{display:block;width:100%;aspect-ratio:16/9;object-fit:contain;background:#e9e8e4}
+  .spfig figcaption{font-size:10.5px;line-height:1.45;color:var(--dim);background:var(--panel2);padding:6px 9px}
+  .spfig figcaption a{color:var(--muted)} .spfig figcaption a:hover{color:var(--accent)}
 
   /* Next.js: el contenedor raíz ocupa toda la ventana */
   body > div:first-child{min-height:100%}
