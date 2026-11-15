@@ -43,6 +43,27 @@ const FICHAS: Arma[] = [
       { id: 'gen5', name: 'Gen5', specs: { peso: '≈ 630 g sin cargador · ≈ 905 g cargada', cañon: '114 mm (4,49")', velocidad: '≈ 375 m/s (9 mm NATO)', extra: 'Longitud total 202 mm; empuñadura sin muescas; retén de corredera ambidiestro' } },
       { id: 'gen4', name: 'Gen4', specs: { peso: '≈ 625 g sin cargador', cañon: '114 mm (4,49")', velocidad: '≈ 375 m/s (9 mm NATO)', extra: 'Lomos de empuñadura intercambiables; muelle recuperador doble' } },
     ] },
+  { id: 'm9a1', name: 'Beretta M9A1', maker: 'Beretta · Italia', group: 'Pistolas',
+    common: {
+      calibre: '9×19 mm Parabellum', sistema: 'Retroceso corto, bloque de cierre oscilante · doble/simple acción (DA/SA), martillo externo',
+      cadencia: 'Semiautomática', cargador: '15 cartuchos (bicolumna); también 17 y 20', alcance: '≈ 50 m',
+      airsoft: 'Tokyo Marui M9A1 GBB (gas); también KJ Works y WE; Umarex fabrica réplicas Beretta con licencia oficial',
+      fuente: 'Wikipedia (Beretta M9), Beretta',
+    },
+    variants: [
+      { id: 'm9a1', name: 'M9A1 (2006)', specs: { peso: '≈ 952 g sin cargador · ≈ 1,16 kg cargada', cañon: '125 mm (4,9")', velocidad: '≈ 381 m/s', extra: 'Pedida por el USMC: raíl Picatinny MIL-STD-1913, boca del cargador biselada, texturizado más agresivo y cargadores resistentes a la arena; longitud total 217 mm' } },
+      { id: 'm9', name: 'M9 (1985)', specs: { peso: '≈ 952 g sin cargador', cañon: '125 mm (4,9")', velocidad: '≈ 381 m/s', extra: 'La Beretta 92FS militar, pistola reglamentaria de las Fuerzas Armadas de EE. UU. de 1985 a 2017; sin raíl' } },
+    ] },
+  { id: 'pitviper', name: 'TTI Pit Viper', maker: 'Taran Tactical Innovations · EE. UU.', group: 'Pistolas',
+    common: {
+      calibre: '9×19 mm Parabellum', sistema: 'Retroceso corto (plataforma 2011) · simple acción, martillo externo',
+      cadencia: 'Semiautomática', cargador: '17–20 cartuchos (bicolumna 2011, según base)', alcance: '≈ 50 m',
+      airsoft: 'EMG × TTI «JW4 Pit Viper» GBB con licencia oficial (AW Custom); usa cargadores Hi-Capa (Tokyo Marui, WE)',
+      fuente: 'Taran Tactical Innovations',
+    },
+    variants: [
+      { id: 'jw4', name: 'JW4 (John Wick 4)', specs: { cañon: '127 mm (5"), «island barrel» con compensador de un puerto', extra: 'Pistola 2011 de competición hecha famosa por «John Wick 4»; disparador de 0,8–1 kg, cortes «viper» en la corredera, montura para óptica Trijicon RMR/SRO' } },
+    ] },
 ];
 
 /** Fichas externas (Wikipedia / IA) ya revisadas y promovidas con scripts/promover-arma.mjs. */

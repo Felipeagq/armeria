@@ -60,14 +60,16 @@ export default function App() {
     const saved = loadSaved();
     const s = useStore.getState();
     s.hydrate(saved);
-    // Llegada desde una ficha (/montar/?m=hk416_a5): cambiar al modelo pedido y limpiar la URL
+    // Llegada desde una ficha (/montar/?m=hk416_a5&p=opt_rds): cambiar al modelo pedido, montar la pieza y limpiar la URL
     try {
       const u = new URL(location.href); const m = u.searchParams.get('m');
       const name = u.searchParams.get('name');
-      if (m || name) {
+      const pieza = u.searchParams.get('p');
+      if (m || name || pieza) {
         if (m && PLATFORMS[m]) s.setPlatform(m);
         if (name) s.rename(name);
-        u.searchParams.delete('m'); u.searchParams.delete('name'); history.replaceState(null, '', u.pathname + u.search + u.hash);
+        if (pieza) s.install(pieza); // desde la ficha de un accesorio: se monta en el cuerpo ya elegido
+        u.searchParams.delete('m'); u.searchParams.delete('name'); u.searchParams.delete('p'); history.replaceState(null, '', u.pathname + u.search + u.hash);
       }
     } catch { /* sin URL (tests) */ }
     const off = onPartRegistered(p => requestPartThumb(p.id, true));

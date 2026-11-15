@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import SiteNav from '@/components/SiteNav';
+import { AccesoriosCompat } from '@/components/AccesoriosCompat';
 import { SistemaNotas } from '@/components/SistemaNotas';
 import { ammoForCalibre } from '@/three/data/ammo';
 import { ARMAS, armaById, armaPhoto, has3d, refSpecs, specRowsOf } from '@/three/data/armas';
@@ -98,6 +99,8 @@ export default async function ArmaPage({ params }: Props) {
               <h2>Munición</h2>
               <ul className="wlist">{ammo.map(c => <li key={c.id}><Link href={`/balas/${c.id}/`}>{c.name}</Link><span>{c.tagline}</span></li>)}</ul>
             </>)}
+
+            <AccesoriosCompat arma={a} />
 
             <div className="wnav">
               {prev ? <Link className="ghost" href={`/armas/${prev.id}/`}>← {prev.name}</Link> : <span />}

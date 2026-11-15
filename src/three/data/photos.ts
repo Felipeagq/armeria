@@ -17,6 +17,8 @@ export interface Photo {
 }
 
 export const PHOTOS: Record<string, Photo> = {
+  m9a1: { file: 'm9a1.webp', kind: 'real', author: 'Imagen de producto (Beretta)' },
+  pitviper: { file: 'pitviper.jpg', kind: 'real', author: 'Imagen de producto (TTI)' },
   l119: { file: 'l119.png', kind: 'airsoft', author: 'Imagen de catálogo (réplica L119A2)' },
   mk18: { file: 'mk18.jpg', kind: 'real', author: "Riot1013", license: "CC BY-SA 4.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0", source: "https://commons.wikimedia.org/wiki/File:MK18.jpg" },
   mcx: { file: 'mcx.jpg', kind: 'real', author: 'Mike Searson', license: 'CC BY-SA 4.0', licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0', source: 'https://commons.wikimedia.org/wiki/File:SIG-MCX-Rifle.jpeg' },

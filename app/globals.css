@@ -147,6 +147,7 @@
   .dot{width:20px;height:20px;border-radius:50%;border:2px solid transparent;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);transition:transform .15s}
   .dot:hover{transform:scale(1.1)}
   .dot.on{border-color:var(--text);box-shadow:none}
+  .sw-ficha{margin-left:auto;font-size:12px;color:var(--muted);text-decoration:underline;text-underline-offset:3px;padding:4px 2px} .sw-ficha:hover{color:var(--text)}
   .slot-empty{border:1px dashed var(--line2);border-radius:var(--r-m);padding:6px 6px 6px 12px;display:flex;justify-content:space-between;align-items:center;color:var(--dim);font-size:13px}
   .slot-empty em{font-style:normal;color:var(--muted);margin-left:4px;cursor:help}
   .slot-empty button{color:var(--muted);font-size:13px;padding:6px 10px;border-radius:var(--r-s);transition:color .15s,background-color .15s}
@@ -524,8 +525,8 @@
   .wactions{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
   .wactions .primary,.wactions .ghost{margin-top:0}
   @media (max-width:640px){
-    .wikihead nav{grid-template-columns:repeat(4,1fr)}
-    .wikihead nav a{font-size:13px;padding:0 2px}
+    .wikihead nav{grid-template-columns:repeat(5,1fr)}
+    .wikihead nav a{font-size:12.5px;padding:0 2px}
     .wfilters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:2px 16px 6px} .wfilters::-webkit-scrollbar{display:none}
     .wfilters > *{flex:none}
     .wcmpbar{left:12px;right:12px;transform:none;bottom:calc(var(--bar) + 12px + env(safe-area-inset-bottom));justify-content:space-between;gap:8px;padding:8px 8px 8px 14px}
@@ -563,3 +564,21 @@
   .wterm .wterm-short{color:var(--text)}
   .wterm-use{font-size:14px !important}
   .wterm-use a{color:var(--text);text-underline-offset:3px}
+
+  /* ═════════════ Accesorios ═════════════ */
+  .wjump{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 4px}
+  a.wchip{display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+  a.wchip b{font-weight:500;font-size:12px;color:var(--dim)}
+  .wgrp{scroll-margin-top:72px}
+  .wgrp h2{margin-top:32px}
+  .windex.acc .wi-maker{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .wkind{margin:0 0 6px;color:var(--muted)}
+  .wpc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 32px}
+  .wpc h3{margin:6px 0 8px;font-size:14px;color:var(--muted);font-weight:500}
+  .wacc a{color:var(--text);text-underline-offset:3px}
+  @media (max-width:640px){
+    .wpc{grid-template-columns:minmax(0,1fr)}
+    .wgrp{scroll-margin-top:12px}
+    .wjump{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:2px 16px 6px} .wjump::-webkit-scrollbar{display:none}
+    .wjump > *{flex:none}
+  }

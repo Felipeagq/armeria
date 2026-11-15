@@ -1,9 +1,11 @@
 'use client';
 import { useState } from 'react';
+import Link from 'next/link';
 import { useStore } from '@/state/store';
 import { PLATFORMS, partById, tintable } from '@/three/registry';
 import { COLOR_NAMES, COLORS, SLOT_LABEL, type ColorKey, type Platform } from '@/three/types';
 import { getViewer } from '@/three/engine/viewerRef';
+import { ACC_POR_PIEZA } from '@/three/data/accesorios';
 import { usePartThumb } from './useThumb';
 import { PhotoFigure, SpecRows, SpecSource } from './Specs';
 import { IconClose, IconGun } from './icons';
@@ -21,7 +23,13 @@ function SpecsPanel({ P, pid }: { P: Platform; pid: string }) {
   );
 }
 
-function Swatches({ slotId, current }: { slotId: string; current: ColorKey }) {
+/** Enlace a la ficha técnica del accesorio (se abre en otra pestaña para no perder el lienzo). */
+const FichaLink = ({ partId, name }: { partId: string; name: string }) => {
+  const id = ACC_POR_PIEZA[partId];
+  return id ? <Link className="sw-ficha" href={`/accesorios/${id}/`} target="_blank" rel="noopener noreferrer" aria-label={`Ficha técnica de ${name} (se abre en otra pestaña)`} onClick={e => e.stopPropagation()}>Ver ficha</Link> : null;
+};
+
+function Swatches({ slotId, current, partId, name }: { slotId: string; current: ColorKey; partId?: string; name?: string }) {
   const setColor = useStore(s => s.setColor);
   return (
     <div className="sw"><span>Color</span>
@@ -29,10 +37,11 @@ function Swatches({ slotId, current }: { slotId: string; current: ColorKey }) {
         <button key={k} className={`dot ${k === current ? 'on' : ''}`} style={{ background: COLORS[k] }} title={COLOR_NAMES[k]} aria-label={COLOR_NAMES[k]}
           onClick={e => { e.stopPropagation(); setColor(slotId, k); }} />
       ))}
+      {partId && name && <FichaLink partId={partId} name={name} />}
     </div>
   );
 }
-const GlbNote = () => <div className="sw"><span>Modelo GLB · usa sus propios materiales</span></div>;
+const GlbNote = ({ partId, name }: { partId?: string; name?: string }) => <div className="sw"><span>Modelo GLB · usa sus propios materiales</span>{partId && name && <FichaLink partId={partId} name={name} />}</div>;
 
 function PartRow({ slotId, partId, color }: { slotId: string; partId: string; color: ColorKey }) {
   const p = partById(partId);
@@ -47,7 +56,7 @@ function PartRow({ slotId, partId, color }: { slotId: string; partId: string; co
         <span><span className="nm">{p.name}</span><span className="sl">{SLOT_LABEL[p.type]}{p.weight ? `, ${p.weight} g` : ''}</span></span>
       </button>
       <button className="x" title="Quitar" aria-label={`Quitar ${p.name}`} onClick={e => { e.stopPropagation(); remove(slotId); }}><IconClose /></button>
-      {tintable(p) ? <Swatches slotId={slotId} current={color} /> : <GlbNote />}
+      {tintable(p) ? <Swatches slotId={slotId} current={color} partId={partId} name={p.name} /> : <GlbNote partId={partId} name={p.name} />}
     </div>
   );
 }
