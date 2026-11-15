@@ -36,11 +36,12 @@ export default function Ficha() {
             })}
           </div>
         )}
-        <div className="fspecs"><SpecRows P={P} /><SpecSource P={P} /></div>
+        <div className="fspecs"><SpecRows P={P} skip={keys.map(([k]) => k)} glosario /><SpecSource P={P} /></div>
       </>) : (
         <p className="fnote">Este modelo no tiene ficha técnica (modelo importado o de ejemplo).</p>
       )}
       <div className="factions">
+        {P.model && <Link className="ghost" href={`/armas/${P.model}/`}>Ficha completa</Link>}
         <button className="ghost" onClick={() => openModal('picker')}>Cambiar modelo</button>
         <button className="ghost" onClick={() => setPanel('parts')}>Ver piezas compatibles</button>
         <Link className="ghost" href="/balas/">Ver munición</Link>

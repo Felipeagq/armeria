@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useStore } from '@/state/store';
 import { totalWeight } from '@/state/build';
@@ -9,15 +9,39 @@ import { renderObject } from '@/three/engine/thumbs';
 import * as GLB from '@/three/glb/models';
 import { SLOT_LABEL, SLOT_TYPES, type SlotType } from '@/three/types';
 import { usePlatformThumb } from './useThumb';
+import { useCompact } from './useCompact';
 import { IconClose, IconSearch } from './icons';
 
 const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 const uid = () => (crypto.randomUUID?.() ?? Date.now().toString(36) + Math.random().toString(36).slice(2)).replace(/-/g, '').slice(0, 12);
 const FAMILIES: Record<string, string> = { pistol: 'Pistola', rifle: 'Carabina', smg: 'Subfusil' };
 
-function Modal({ children, onClose, className = '', dismissable = true }: { children: React.ReactNode; onClose: () => void; className?: string; dismissable?: boolean }) {
+const FOCUSABLE = 'a[href],button:not(:disabled),input:not([hidden]):not(:disabled),select:not(:disabled),textarea:not(:disabled),[tabindex]:not([tabindex="-1"])';
+
+/** Diálogo modal: el foco entra y queda atrapado, Esc lo cierra y al cerrar el foco vuelve a donde estaba. */
+function Modal({ children, onClose, className = '', dismissable = true, label }: { children: React.ReactNode; onClose: () => void; className?: string; dismissable?: boolean; label: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const closeRef = useRef(onClose);
+  const dismissRef = useRef(dismissable);
+  useEffect(() => { closeRef.current = onClose; dismissRef.current = dismissable; });
+  useEffect(() => {
+    const el = ref.current; if (!el) return;
+    const prev = document.activeElement as HTMLElement | null;
+    const items = () => [...el.querySelectorAll<HTMLElement>(FOCUSABLE)].filter(n => n.offsetParent !== null);
+    if (!el.contains(document.activeElement)) (items()[0] ?? el).focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); closeRef.current(); return; }
+      if (e.key !== 'Tab') return;
+      const f = items(); if (!f.length) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
+    el.addEventListener('keydown', onKey);
+    return () => { el.removeEventListener('keydown', onKey); prev?.focus?.(); };
+  }, []);
   return (
-    <div className="modal" role="dialog" aria-modal="true" onClick={e => { if (dismissable && e.target === e.currentTarget) onClose(); }}>
+    <div ref={ref} className="modal" role="dialog" aria-modal="true" aria-label={label} tabIndex={-1} onClick={e => { if (dismissable && e.target === e.currentTarget) onClose(); }}>
       <div className={`sheet ${className}`}>{children}</div>
     </div>
   );
@@ -29,12 +53,14 @@ function PickerCard({ name, maker, ids, labels }: { name: string; maker: string;
   const platform = useStore(s => s.build.platform);
   const { setPlatform, openModal } = useStore.getState();
   const first = ids.find(id => id === platform) ?? ids[0];
-  const thumb = usePlatformThumb(first);
+  // En móvil se omite la miniatura 3D: ahorra espacio en pantalla y evita el render.
+  const compact = useCompact();
+  const thumb = usePlatformThumb(first, !compact);
   const P = PLATFORMS[first];
   const choose = (id: string) => { openModal(null); setPlatform(id); };
   return (
     <div className={`pcard ${ids.includes(platform) ? 'on' : ''}`} onClick={() => choose(first)}>
-      <div className="thumb">{thumb ? <img src={thumb} alt="" /> : <div className="ph" />}</div>
+      {!compact && <div className="thumb">{thumb ? <img src={thumb} alt="" /> : <div className="ph" />}</div>}
       <div className="pn">{name}</div><div className="pm">{maker}</div>
       {P.specs && <div className="ps">{P.specs.calibre}{P.specs.cadencia ? ` · ${P.specs.cadencia}` : ''}</div>}
       <div className="chips">
@@ -53,10 +79,12 @@ export function PickerModal() {
   const entries = useMemo(() => pickerEntries(), [registryVersion]); // eslint-disable-line react-hooks/exhaustive-deps
   const nq = norm(q.trim());
   const list = entries.filter(e => !nq || norm(`${e.name} ${e.maker} ${e.labels.join(' ')}`).includes(nq));
+  // El teclado del móvil no debe abrirse solo: enfoque automático únicamente con puntero preciso
+  const [fine] = useState(() => matchMedia('(pointer:fine)').matches);
   return (
-    <Modal onClose={close} className="picker">
+    <Modal onClose={close} className="picker" label="Elegir modelo">
       <div className="row"><strong>Elegir modelo</strong><CloseBtn onClick={close} /></div>
-      <label className="search"><IconSearch /><input autoFocus placeholder="Buscar modelo, fabricante o variante" value={q} onChange={e => setQ(e.target.value)} /></label>
+      <label className="search"><IconSearch /><input type="search" aria-label="Buscar modelo" autoFocus={fine} placeholder="Buscar modelo, fabricante o variante…" value={q} onChange={e => setQ(e.target.value)} autoComplete="off" /></label>
       <div className="scroll">
         {GROUPS.map(g => {
           const items = list.filter(e => e.group === g); if (!items.length) return null;
@@ -66,7 +94,7 @@ export function PickerModal() {
             </div>
           );
         })}
-        {!list.length && <p className="muted">Ningún modelo coincide.</p>}
+        {!list.length && <p className="muted">«{q}» no está en el catálogo. <a href={`/armas/buscar/?q=${encodeURIComponent(q.trim())}`}>Buscar información →</a></p>}
       </div>
     </Modal>
   );
@@ -96,7 +124,7 @@ export function ExportModal() {
   }, 'image/png');
 
   return (
-    <Modal onClose={close}>
+    <Modal onClose={close} label="Exportar imagen">
       <div className="row"><strong>Exportar imagen</strong><CloseBtn onClick={close} /></div>
       {img && <img src={img} alt="Vista previa del build exportado" />}
       <div className="row"><p>{msg}</p>
@@ -119,7 +147,7 @@ export function ModelsModal({ records, onPickFile, onDeleted }: { records: GLB.M
     unregisterModel(id); onDeleted(id);
   };
   return (
-    <Modal onClose={close} className="form">
+    <Modal onClose={close} className="form" label="Modelos 3D">
       <div className="row"><strong>Modelos 3D</strong><CloseBtn onClick={close} /></div>
       <div className="scroll">
         <label className="dropzone">
@@ -203,7 +231,7 @@ export function ImportModal({ file, onDone, onCancel }: { file: File; onDone: (r
   };
 
   return (
-    <Modal onClose={onCancel} className="form" dismissable={false}>
+    <Modal onClose={onCancel} className="form" dismissable={false} label="Importar modelo GLB">
       <div className="row"><strong>Importar modelo GLB</strong></div>
       <div className="preview">
         {preview?.img ? <img src={preview.img} alt="Vista previa del modelo" /> : <img alt="" />}

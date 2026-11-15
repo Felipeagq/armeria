@@ -19,7 +19,7 @@ function Card({ part, installed }: { part: Part; installed: boolean }) {
   const thumb = usePartThumb(part.id);
   const install = useStore(s => s.install);
   return (
-    <button className="card" title={`Añadir ${part.name}`} onClick={() => install(part.id)} onMouseEnter={() => markers(part.type)}>
+    <button className="card" title={`Añadir ${part.name}`} onClick={() => install(part.id)} onMouseEnter={() => markers(part.type)} onFocus={() => markers(part.type)}>
       {installed && <span className="badge">Instalada</span>}
       {part.glb && <span className="badge glb">GLB</span>}
       <div className="thumb">{thumb ? <img src={thumb} alt="" /> : <div className="ph" />}</div>
@@ -51,16 +51,16 @@ export default function Catalog() {
   return (
     <aside className="catalog">
       <div className="pad">
-        <label className="search"><IconSearch /><input placeholder="Buscar piezas" autoComplete="off" value={search} onChange={e => setSearch(e.target.value)} /></label>
+        <label className="search"><IconSearch /><input type="search" aria-label="Buscar piezas" placeholder="Buscar piezas…" autoComplete="off" value={search} onChange={e => setSearch(e.target.value)} /></label>
       </div>
-      <div className="cats" onMouseLeave={() => markers(null)}>
+      <div className="cats" role="group" aria-label="Categorías" onMouseLeave={() => markers(null)} onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget)) markers(null); }}>
         {CATS.map(c => (
-          <button key={c.type} className={`chip ${c.type === cat ? 'on' : ''}`} disabled={!counts[c.type]} onClick={() => setCat(c.type)} onMouseEnter={() => markers(c.type)}>
+          <button key={c.type} className={`chip ${c.type === cat ? 'on' : ''}`} disabled={!counts[c.type]} aria-pressed={c.type === cat} onClick={() => setCat(c.type)} onMouseEnter={() => markers(c.type)} onFocus={() => markers(c.type)}>
             {c.label}<b>{counts[c.type] ?? 0}</b>
           </button>
         ))}
       </div>
-      <div className="grid" onMouseLeave={() => markers(null)}>
+      <div className="grid" onMouseLeave={() => markers(null)} onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget)) markers(null); }}>
         {list.length ? list.map(p => <Card key={p.id} part={p} installed={installed.has(p.id)} />)
           : <div className="empty">No hay piezas que coincidan{q ? ` con «${search}»` : ''}.</div>}
       </div>

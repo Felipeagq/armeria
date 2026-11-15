@@ -1,7 +1,9 @@
-# Armería 3D — Constructor de réplicas airsoft
+# Armería 3D — Enciclopedia de armas y réplicas airsoft
 
-Configurador 3D de réplicas de airsoft hecho con **Next.js (App Router) + TypeScript + three.js**.
-Incluye 12 modelos reales con sus variantes (HK416 A5/A7/A8, M4/AR-15, MK18, SIG516, L119A2, MCX Virtus, AK-74M, AK-12, Galil ACE, FN SCAR L/H, HK G36 C/K y CZ BREN 2), su ficha técnica, compatibilidades por familia, despiece animado, exportación a PNG e importación de modelos `.glb`.
+Enciclopedia de armas reales y de sus réplicas de airsoft hecha con **Next.js (App Router) + TypeScript**, con un constructor 3D opcional (**three.js**).
+La **ficha** es la entidad principal: cada arma tiene datos del modelo real, de su réplica y enlaces a su munición. Las que además tienen geometría (12 modelos con variantes: HK416 A5/A7/A8, M4/AR-15, MK18, SIG516, L119A2, MCX Virtus, AK-74M, AK-12, Galil ACE, FN SCAR L/H, HK G36 C/K y CZ BREN 2) se pueden **montar en 3D** con accesorios, despiece animado, exportación a PNG e importación de modelos `.glb`. Una ficha sin 3D (p. ej. Glock 17) se consulta exactamente igual.
+
+Rutas: `/` índice con búsqueda, filtros (calibre, familia, país, 3D) y orden, todo en la URL (`?calibre=5,56×45&3d=1&orden=nombre`) · `/comparar/?a=hk416:a5,m4` comparador de 2–3 armas o variantes (`dif=1` muestra solo diferencias) · `/sistemas/` glosario de sistemas y cerrojos (cada ficha explica en una línea los que usa) · `/armas/[id]/` ficha de un arma · `/balas/` y `/balas/[id]/` munición · `/montar/` constructor 3D (`?m=<plataforma>` preselecciona el modelo). Solo `/montar/` carga three.js en el navegador.
 
 ## Requisitos
 
@@ -24,12 +26,19 @@ npm start            # sirve el build en http://localhost:3010 (requiere npm run
 ```
 app/
   layout.tsx            Metadatos, fuentes autoalojadas y estilos globales
-  page.tsx              Página única (componente servidor que monta el cliente)
+  page.tsx              Portada: buscador y catálogo de fichas (servidor; el buscador es cliente sin three)
+  armas/[id]/page.tsx   Ficha estática de un arma (datos comunes, variantes, munición, «Montar en 3D» si procede)
+  balas/                Enciclopedia de munición
+  montar/page.tsx       Constructor 3D (única ruta que carga three.js)
   globals.css           Estilos de la interfaz
 src/
   components/           UI en React (cliente)
+    SiteNav.tsx         Cabecera de la enciclopedia (servidor)
+    ArmasBuscador.tsx   Filtros, orden y selección para comparar; estado en la URL (recibe datos serializados)
+    ArmasLista.tsx      Lista de armas compartida: el servidor la sirve completa y el buscador la reutiliza filtrada
+    Comparador.tsx      Tabla de comparación (lista por campo en móvil); estado en la URL
     ClientApp.tsx       Carga App solo en el navegador (three.js necesita WebGL)
-    App.tsx             Arranque, atajos de teclado, arrastrar y soltar, modales
+    App.tsx             Arranque del constructor, atajos de teclado, arrastrar y soltar, modales
     Header / Catalog / Viewport / Inspector / Modals
   state/
     store.ts            Estado global (zustand): build, historial, selección, vista
@@ -39,16 +48,34 @@ src/
     engine/thumbs.ts    Miniaturas renderizadas por lotes en un renderer aparte
     core/               Geometría con caché, materiales PBR procedurales, Builder
     data/               Plataformas genéricas, piezas y modelos reales con fichas
+    data/armas.ts       Enciclopedia: fichas (derivadas de MODELS + fichas sin 3D), calibres y país normalizados; sin WebGL
+    data/sistemas.ts    Glosario de sistemas de funcionamiento, cerrojos y disparo (texto corto + detalle + patrón que lo detecta en una ficha)
+    data/spec-labels.ts Etiquetas y orden de los campos de una ficha (módulo ligero, apto para cliente)
     glb/models.ts       Carga GLB, normalización, anclajes, IndexedDB y manifiesto
     registry.ts         Registro de plataformas/piezas y compatibilidades
 ```
 
 Decisiones principales:
 
+- **La ficha manda; el 3D es opcional.** `PLATFORMS` (registro) contiene solo lo construible; `ARMAS` (`data/armas.ts`) contiene todas las fichas y enlaza cada variante con su plataforma 3D si existe. Añadir un arma sin modelo es añadir una entrada a `FICHAS`; añadir geometría después no cambia la ficha.
 - **Separación motor / UI.** `Viewer` es una clase de three.js pura. React solo le envía el estado (build, selección, vista), y él responde con eventos (`onPick`, `onHover`, `onBounds`). El motor se puede probar o reutilizar sin React.
 - **Compatibilidad por etiquetas.** Cada plataforma declara `tags` (por ejemplo `stanag`, `ar-tube` o `ak545`) y cada pieza declara `fits`. Una pieza encaja si comparte al menos una etiqueta. Añadir un modelo nuevo no obliga a tocar las piezas existentes.
 - **Datos no confiables validados.** El build guardado en `localStorage`, el historial y los GLB importados pasan por validación (`validState`, cabecera `glTF`, límite de 80 MB, rutas del manifiesto restringidas a `models/`).
 - **Sin dependencias externas en tiempo de ejecución.** Las fuentes están autoalojadas (Fontsource) y las texturas se generan en el navegador. Así la CSP puede ser `default-src 'self'`.
+
+## Armas fuera del catálogo (cascada curado → Wikipedia → IA)
+
+Si un arma no está en el catálogo, `/armas/buscar/?q=…` la busca en cascada; el selector del constructor y el buscador de la portada enlazan ahí cuando no hay resultados.
+
+1. **Catálogo** (`ARMAS`): fichas curadas, con o sin 3D.
+2. **Wikipedia** (`src/server/wikipedia.ts`): búsqueda en es/en restringida a artículos con infobox de arma (`hastemplate:`), lectura de la infobox (`src/server/wikitext.ts` la convierte a texto plano), extracto, foto y atribución de Commons. La ficha se sirve en `/armas/ext/w-<idioma>-<título>/` con badge «Wikipedia» y enlace al artículo (CC BY-SA). Las respuestas HTTP se cachean un día.
+3. **IA** (`src/server/ia.ts`): solo por acción explícita del usuario (botón «Generar ficha con IA», POST), con límite por IP y por día. Un modelo con búsqueda web rellena el esquema `Specs` mediante una herramienta estricta y cita sus fuentes; la ficha se marca **«Generado con IA · sin verificar»** y no se indexa. Se activa con `ANTHROPIC_API_KEY` (ver `.env.example`); sin clave, el botón no aparece.
+
+**La caché es la fuente de verdad** (`src/server/store.ts`): toda ficha de los niveles 2 y 3 se guarda en memoria y, si el disco es escribible, en `.data/armas/<slug>.json` (ignorado por git). En Amplify el sistema de archivos es efímero, así que allí la caché vive por instancia; para persistencia real entre despliegues, sustituye el almacén por DynamoDB o S3 (el módulo expone solo `getFicha`/`putFicha`/`listFichas`).
+
+**Revisión y promoción**: tras comprobar una ficha, `node scripts/promover-arma.mjs <slug>` la copia a `src/three/data/armas-externas.json` con `revisado: true`; desde ahí entra en `ARMAS` como ficha curada (estática, indexable) en el siguiente build.
+
+Cualquier ficha externa ofrece «Montar con cuerpo de pistola/carabina/subfusil»: abre el constructor con la plataforma genérica más parecida y el nombre del arma; la silueta no es la del modelo real.
 
 ## Despliegue en AWS Amplify Hosting
 

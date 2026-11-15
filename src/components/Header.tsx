@@ -13,7 +13,8 @@ export default function Header() {
 
   return (
     <header>
-      <div className="logo"><Logo /><div>Armería 3D<small>Constructor airsoft</small></div></div>
+      <h1 className="sr-only">Constructor 3D: {P.name}</h1>
+      <Link href="/" className="logo" title="Enciclopedia"><Logo /><div>Armería 3D<small>Constructor 3D</small></div></Link>
       <div className="sep" />
       <input
         className="name" aria-label="Nombre del build" maxLength={48}
@@ -28,10 +29,10 @@ export default function Header() {
         <IconChevron />
       </button>
       <div className="sep" />
-      <button className="iconbtn" title="Deshacer (Ctrl+Z)" disabled={!canUndo} onClick={undo}><IconUndo /></button>
-      <button className="iconbtn" title="Rehacer (Ctrl+Shift+Z)" disabled={!canRedo} onClick={redo}><IconRedo /></button>
-      <button className="iconbtn" title="Restablecer build" onClick={reset}><IconReset /></button>
-      <Link className="ghost hnav" href="/balas/" title="Enciclopedia de munición">Balas</Link>
+      <button className="iconbtn" title="Deshacer (Ctrl+Z)" aria-label="Deshacer" disabled={!canUndo} onClick={undo}><IconUndo /></button>
+      <button className="iconbtn" title="Rehacer (Ctrl+Shift+Z)" aria-label="Rehacer" disabled={!canRedo} onClick={redo}><IconRedo /></button>
+      <button className="iconbtn" title="Restablecer build" aria-label="Restablecer build" onClick={reset}><IconReset /></button>
+      <Link className="ghost hnav" href="/" title="Fichas de armas y munición">Armas</Link>
       {/* En pantallas estrechas solo se muestra el icono (.lbl se oculta); title/aria-label mantienen el nombre accesible */}
       <button className="ghost" title="Importar y gestionar modelos GLB" aria-label="Modelos 3D" onClick={() => openModal('models')}><IconCube /><span className="lbl">Modelos 3D</span></button>
       <button className="primary" title="Exportar PNG" aria-label="Exportar PNG" onClick={() => openModal('export')}><IconDownload /><span className="lbl">Exportar PNG</span></button>

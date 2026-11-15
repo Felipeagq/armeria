@@ -4,20 +4,28 @@
 // Para añadir o cambiar una foto: copia el archivo a public/photos/ y añade una entrada con la clave del MODELO
 // (p. ej. 'hk416'), o de una VARIANTE concreta ('hk416_a7') si quieres una foto distinta para ella.
 //  - kind: 'real' = foto del arma real · 'airsoft' = foto de la réplica de airsoft.
-//  - Sin entrada, la ficha simplemente no muestra foto (hoy: MK18, L119A2, MCX Virtus y G36 no tienen foto libre).
-import { PLATFORMS } from '../registry';
+//  - Sin entrada, la ficha simplemente no muestra foto. `source`/`license` son opcionales: una foto propia o de uso personal (p. ej. l119) no se enlaza.
 
 export interface Photo {
   file: string;
   kind: 'real' | 'airsoft';
-  author: string;
-  license: string;
+  author?: string;
+  license?: string;
   licenseUrl?: string;
-  /** Página de origen (Wikimedia Commons). */
-  source: string;
+  /** Página de origen (Wikimedia Commons). Sin ella, la foto es propia o de uso personal y no se enlaza. */
+  source?: string;
 }
 
 export const PHOTOS: Record<string, Photo> = {
+  l119: { file: 'l119.png', kind: 'airsoft', author: 'Imagen de catálogo (réplica L119A2)' },
+  mk18: { file: 'mk18.jpg', kind: 'real', author: "Riot1013", license: "CC BY-SA 4.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0", source: "https://commons.wikimedia.org/wiki/File:MK18.jpg" },
+  mcx: { file: 'mcx.jpg', kind: 'real', author: 'Mike Searson', license: 'CC BY-SA 4.0', licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0', source: 'https://commons.wikimedia.org/wiki/File:SIG-MCX-Rifle.jpeg' },
+  g36: { file: 'g36.png', kind: 'real', author: 'DomoK / Auge=mit', license: 'CC BY-SA 4.0', licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0', source: 'https://commons.wikimedia.org/wiki/File:Gewehr_G36_noBG.png' },
+  glock17: {
+    file: 'glock17.jpg', kind: 'real', author: 'U.S. ATF',
+    license: 'Dominio público',
+    source: 'https://commons.wikimedia.org/wiki/File:Glock_17_(transparent_background).jpg',
+  },
   m4: {
     file: 'm4.png', kind: 'real', author: "PEO Soldier / MathKnight",
     license: "Dominio público",
@@ -62,5 +70,5 @@ export const PHOTOS: Record<string, Photo> = {
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 /** Foto de una plataforma: la de su variante si existe; si no, la de su modelo. */
-export const photoFor = (platformId: string): Photo | undefined => PHOTOS[platformId] ?? PHOTOS[PLATFORMS[platformId]?.model ?? ''];
+export const photoFor = (platformId: string, modelId?: string): Photo | undefined => PHOTOS[platformId] ?? (modelId ? PHOTOS[modelId] : undefined);
 export const photoUrl = (p: Photo) => `${BASE_PATH}/photos/${p.file}`;

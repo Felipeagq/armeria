@@ -188,9 +188,9 @@ export class Viewer {
     const x = c.getContext('2d')!;
     x.drawImage(src, 0, 0);
     x.fillStyle = '#16171a'; x.fillRect(0, H, W, band); x.fillStyle = '#ff7a1a'; x.fillRect(0, H, W, Math.max(2, 2 * dpr));
-    x.fillStyle = '#ecebe7'; x.font = `600 ${20 * dpr}px 'Space Grotesk Variable', sans-serif`; x.textBaseline = 'middle';
+    x.fillStyle = '#e8e9e7'; x.font = `600 ${20 * dpr}px 'IBM Plex Sans Variable', sans-serif`; x.textBaseline = 'middle';
     x.fillText(title, 22 * dpr, H + band / 2);
-    x.font = `${13 * dpr}px 'JetBrains Mono Variable', monospace`; x.fillStyle = '#8d9097'; x.textAlign = 'right';
+    x.font = `${13 * dpr}px 'IBM Plex Sans Variable', sans-serif`; x.fillStyle = '#8d9097'; x.textAlign = 'right';
     x.fillText(info, W - 22 * dpr, H + band / 2);
     this.markerGroup.visible = true; this.setHighlight(...prev);
     return c;

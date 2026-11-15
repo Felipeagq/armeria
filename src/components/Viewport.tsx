@@ -1,18 +1,11 @@
 'use client';
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useStore } from '@/state/store';
 import { totalWeight } from '@/state/build';
 import { Viewer, type ViewName } from '@/three/engine/Viewer';
 import { setViewer } from '@/three/engine/viewerRef';
-
-/** Móvil: no hay visor 3D (la app es una enciclopedia). Misma condición que el modo «pestañas» de globals.css. */
-const COMPACT = '(max-width:640px), (max-height:520px) and (max-width:960px)';
-const isCompact = () => window.matchMedia(COMPACT).matches;
-const useCompact = () => useSyncExternalStore(
-  cb => { const mq = window.matchMedia(COMPACT); mq.addEventListener('change', cb); return () => mq.removeEventListener('change', cb); },
-  isCompact,
-  () => false,
-);
+/** Móvil: no hay visor 3D (la app es una enciclopedia). */
+import { isCompact, useCompact } from './useCompact';
 
 const fmtWeight = (w: number) => (!w ? '—' : w >= 1000 ? `${(w / 1000).toFixed(2)} kg` : `${w} g`);
 
@@ -64,7 +57,7 @@ export default function Viewport() {
   const view = (n: ViewName) => viewerRef.current?.setView(n);
 
   return (
-    <section className="stage" ref={stageRef} onPointerDown={() => setHint(false)} onWheel={() => setHint(false)}>
+    <section className="stage" aria-label="Visor 3D del arma. Arrastra para girar; usa el catálogo y el lienzo para cambiar piezas con teclado." ref={stageRef} onPointerDown={() => setHint(false)} onWheel={() => setHint(false)}>
       <div className="hint" style={{ opacity: hint ? 1 : 0 }}>
         <span className="h-mouse">Arrastra para orbitar · Rueda para zoom · Clic derecho para desplazar · Clic en una pieza para seleccionarla</span>
         <span className="h-touch">Arrastra para orbitar · Pellizca para zoom · Dos dedos para desplazar · Toca una pieza para seleccionarla</span>

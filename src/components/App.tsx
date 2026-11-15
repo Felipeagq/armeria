@@ -4,7 +4,7 @@ import { useStore } from '@/state/store';
 import { loadSaved } from '@/state/build';
 import { getViewer } from '@/three/engine/viewerRef';
 import { requestPartThumb } from '@/three/engine/thumbs';
-import { onPartRegistered, partById, registerModel } from '@/three/registry';
+import { PLATFORMS, onPartRegistered, partById, registerModel } from '@/three/registry';
 import * as GLB from '@/three/glb/models';
 import Header from './Header';
 import Catalog from './Catalog';
@@ -60,6 +60,16 @@ export default function App() {
     const saved = loadSaved();
     const s = useStore.getState();
     s.hydrate(saved);
+    // Llegada desde una ficha (/montar/?m=hk416_a5): cambiar al modelo pedido y limpiar la URL
+    try {
+      const u = new URL(location.href); const m = u.searchParams.get('m');
+      const name = u.searchParams.get('name');
+      if (m || name) {
+        if (m && PLATFORMS[m]) s.setPlatform(m);
+        if (name) s.rename(name);
+        u.searchParams.delete('m'); u.searchParams.delete('name'); history.replaceState(null, '', u.pathname + u.search + u.hash);
+      }
+    } catch { /* sin URL (tests) */ }
     const off = onPartRegistered(p => requestPartThumb(p.id, true));
     loadCustomModels().then(recs => {
       if (!recs.length) return;
@@ -124,7 +134,7 @@ export default function App() {
   return (
     <div className="app">
       <Header />
-      <div className={`layout ${dragging ? 'dragging' : ''}`} data-panel={panel}>
+      <div id="main" tabIndex={-1} className={`layout ${dragging ? 'dragging' : ''}`} data-panel={panel}>
         <Catalog />
         <Viewport />
         <Inspector />

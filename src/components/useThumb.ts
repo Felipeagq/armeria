@@ -9,8 +9,9 @@ export function usePartThumb(id: string) {
   useEffect(() => { requestPartThumb(id); }, [id]);
   return getThumb(partThumbKey(id));
 }
-export function usePlatformThumb(id: string) {
+/** `enabled: false` evita el render 3D (p. ej. en móvil, donde la miniatura no se muestra). */
+export function usePlatformThumb(id: string, enabled = true) {
   useThumbsVersion();
-  useEffect(() => { requestPlatformThumb(id); }, [id]);
-  return getThumb(platformThumbKey(id));
+  useEffect(() => { if (enabled) requestPlatformThumb(id); }, [id, enabled]);
+  return enabled ? getThumb(platformThumbKey(id)) : undefined;
 }

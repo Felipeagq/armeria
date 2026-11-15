@@ -41,9 +41,11 @@ function PartRow({ slotId, partId, color }: { slotId: string; partId: string; co
   const { select, hover, remove } = useStore.getState();
   if (!p) return null;
   return (
-    <div className={`item ${selected ? 'sel' : ''}`} onClick={() => select(selected ? null : slotId)} onMouseEnter={() => hover(slotId)} onMouseLeave={() => hover(null)}>
-      <div className="th">{thumb && <img src={thumb} alt="" />}</div>
-      <div><div className="nm">{p.name}</div><div className="sl">{SLOT_LABEL[p.type]}{p.weight ? ` · ${p.weight} g` : ''}</div></div>
+    <div className={`item ${selected ? 'sel' : ''}`} onMouseEnter={() => hover(slotId)} onMouseLeave={() => hover(null)}>
+      <button className="ihit" aria-pressed={selected} onClick={() => select(selected ? null : slotId)} onFocus={() => hover(slotId)} onBlur={() => hover(null)}>
+        <span className="th">{thumb && <img src={thumb} alt="" width={48} height={36} />}</span>
+        <span><span className="nm">{p.name}</span><span className="sl">{SLOT_LABEL[p.type]}{p.weight ? `, ${p.weight} g` : ''}</span></span>
+      </button>
       <button className="x" title="Quitar" aria-label={`Quitar ${p.name}`} onClick={e => { e.stopPropagation(); remove(slotId); }}><IconClose /></button>
       {tintable(p) ? <Swatches slotId={slotId} current={color} /> : <GlbNote />}
     </div>
@@ -68,9 +70,11 @@ export default function Inspector() {
       <div className="ihead"><h3>En el lienzo</h3><span className="count">{n + 1} piezas</span></div>
       <div className="ilist">
         <SpecsPanel P={P} pid={build.platform} />
-        <div className={`item ${baseSelected ? 'sel' : ''}`} onClick={() => select(baseSelected ? null : 'base')} onMouseEnter={() => hover('base')} onMouseLeave={() => hover(null)}>
-          <div className="th"><IconGun /></div>
-          <div><div className="nm">{P.name}</div><div className="sl">Cuerpo{P.weight ? ` · ${P.weight} g` : ''}</div></div><div />
+        <div className={`item ${baseSelected ? 'sel' : ''}`} onMouseEnter={() => hover('base')} onMouseLeave={() => hover(null)}>
+          <button className="ihit" aria-pressed={baseSelected} onClick={() => select(baseSelected ? null : 'base')} onFocus={() => hover('base')} onBlur={() => hover(null)}>
+            <span className="th"><IconGun /></span>
+            <span><span className="nm">{P.name}</span><span className="sl">Cuerpo{P.weight ? `, ${P.weight} g` : ''}</span></span>
+          </button>
           {P.glb ? <GlbNote /> : <Swatches slotId="base" current={build.baseColor} />}
         </div>
         {P.slots.map(slot => {
