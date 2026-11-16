@@ -7,6 +7,8 @@ import { FOTOS } from './accesorios-fotos';
 
 export type GrupoAcc = 'Ópticas' | 'Bocachas' | 'Luces y láseres' | 'Empuñaduras y apoyos' | 'Cargadores' | 'Culatas';
 export const GRUPOS_ACC: GrupoAcc[] = ['Ópticas', 'Bocachas', 'Luces y láseres', 'Empuñaduras y apoyos', 'Cargadores', 'Culatas'];
+/** Ancla de cada grupo en /accesorios/ (p. ej. «Luces y láseres» → luces-y-laseres). */
+export const slugGrupo = (g: GrupoAcc) => g.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
 export interface AccFoto {
   file: string;

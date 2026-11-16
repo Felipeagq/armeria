@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import SiteNav from '@/components/SiteNav';
+import SiteFooter from '@/components/SiteFooter';
+import { Migas } from '@/components/Migas';
 import { SistemaNotas } from '@/components/SistemaNotas';
 import { ammoForCalibre } from '@/three/data/ammo';
 import { specRowsOf } from '@/three/data/armas';
@@ -42,7 +44,7 @@ export default async function FichaExternaPage({ params }: Props) {
     <>
       <SiteNav current="armas" />
       <main id="main" className="wikimain wide">
-        <p className="crumbs"><Link href="/">← Armas</Link> <span aria-hidden>/</span> <Link href={`/armas/buscar/?q=${encodeURIComponent(f.name)}`}>Buscar</Link></p>
+        <Migas items={[{ label: 'Armas', href: '/' }, { label: 'Buscar', href: `/armas/buscar/?q=${encodeURIComponent(f.name)}` }, { label: f.name }]} />
         <div className={`wsheet ${f.photo ? '' : 'nophoto'}`}>
           {f.photo && (
             <figure className="spfig wplate">
@@ -103,6 +105,7 @@ export default async function FichaExternaPage({ params }: Props) {
           </div>
         </div>
       </main>
+      <SiteFooter ancho />
     </>
   );
 }

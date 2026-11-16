@@ -3,7 +3,7 @@
 Enciclopedia de armas reales y de sus réplicas de airsoft hecha con **Next.js (App Router) + TypeScript**, con un constructor 3D opcional (**three.js**).
 La **ficha** es la entidad principal: cada arma tiene datos del modelo real, de su réplica y enlaces a su munición. Las que además tienen geometría (12 modelos con variantes: HK416 A5/A7/A8, M4/AR-15, MK18, SIG516, L119A2, MCX Virtus, AK-74M, AK-12, Galil ACE, FN SCAR L/H, HK G36 C/K y CZ BREN 2) se pueden **montar en 3D** con accesorios, despiece animado, exportación a PNG e importación de modelos `.glb`. Una ficha sin 3D (p. ej. Glock 17) se consulta exactamente igual.
 
-Rutas: `/` índice con búsqueda, filtros (calibre, familia, país, 3D) y orden, todo en la URL (`?calibre=5,56×45&3d=1&orden=nombre`) · `/comparar/?a=hk416:a5,m4` comparador de 2–3 armas o variantes (`dif=1` muestra solo diferencias) · `/sistemas/` glosario de sistemas y cerrojos (cada ficha explica en una línea los que usa) · `/armas/[id]/` ficha de un arma · `/accesorios/` y `/accesorios/[id]/` enciclopedia de accesorios (miras, bocachas, luces y láseres, empuñaduras, cargadores, culatas) · `/balas/` y `/balas/[id]/` munición · `/montar/` constructor 3D (`?m=<plataforma>` preselecciona el modelo y `&p=<pieza>` monta una pieza al llegar). Solo `/montar/` carga three.js en el navegador.
+Rutas: `/` índice con búsqueda, filtros (calibre, familia, país, 3D) y orden, todo en la URL (`?calibre=5,56×45&3d=1&orden=nombre`) · `/comparar/?a=hk416:a5,m4` comparador de 2–3 armas o variantes (`dif=1` muestra solo diferencias) · `/sistemas/` glosario (sistemas, cerrojos y términos de las réplicas de airsoft: AEG, AEP, GBB; cada ficha los explica en una línea desplegable) · `/armas/[id]/` ficha de un arma (`?v=<variante>` elige la variante activa) · `/accesorios/` y `/accesorios/[id]/` enciclopedia de accesorios (miras, bocachas, luces y láseres, empuñaduras, cargadores, culatas) · `/balas/` y `/balas/[id]/` munición · `/montar/` constructor 3D (`?m=<plataforma>` preselecciona el modelo y `&p=<pieza>` monta una pieza al llegar). `/api/busqueda/` es el índice estático del buscador global (Ctrl/Cmd + K o «/»), que se descarga al abrirlo. Una página 404 propia en español. Solo `/montar/` carga three.js en el navegador.
 
 ## Requisitos
 
@@ -51,6 +51,9 @@ src/
     data/armas.ts       Enciclopedia: fichas (derivadas de MODELS + fichas sin 3D), calibres y país normalizados; sin WebGL
     data/sistemas.ts    Glosario de sistemas de funcionamiento, cerrojos y disparo (texto corto + detalle + patrón que lo detecta en una ficha)
     data/accesorios.ts  Fichas de accesorios (40, una por TIPO de accesorio): datos, cómo funciona, ventajas/límites, airsoft y `partes` (ids de pieza 3D que cubre); sin three
+    data/ficha.ts       SOLO SERVIDOR: datos de la ficha de un arma por variante (cifras, energía en boca, munición, accesorios que encajan en su plataforma 3D)
+    data/ficha-indice.ts  Secciones del índice y filas que difieren entre variantes (sin imports de servidor: lo usan página y cliente)
+    data/busqueda.ts    SOLO SERVIDOR: índice del buscador global (armas, accesorios, cartuchos, glosario)
     data/accesorios-compat.ts  SOLO SERVIDOR: qué armas y cuerpos genéricos admiten cada accesorio (misma regla que el constructor) y validación al compilar: cada pieza 3D debe tener ficha
     data/spec-labels.ts Etiquetas y orden de los campos de una ficha (módulo ligero, apto para cliente)
     glb/models.ts       Carga GLB, normalización, anclajes, IndexedDB y manifiesto

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import SiteNav from '@/components/SiteNav';
+import SiteFooter from '@/components/SiteFooter';
 import Comparador from '@/components/Comparador';
 import { armaComps } from '@/three/data/armas';
 
@@ -20,6 +21,7 @@ export default function CompararPage() {
           <Comparador armas={armaComps()} />
         </Suspense>
       </main>
+      <SiteFooter />
     </>
   );
 }

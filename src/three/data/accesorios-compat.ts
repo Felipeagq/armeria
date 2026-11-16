@@ -36,6 +36,8 @@ export const accesoriosPara = (arma: Arma): Accesorio[] => {
   const pids = arma.variants.map(v => v.platform).filter((p): p is string => !!p);
   return ACCESORIOS.filter(a => piezasDe(a).some(p => pids.some(pid => encaja(p, pid))));
 };
+/** Fichas de accesorios que se pueden montar en una variante concreta (id de plataforma del constructor). */
+export const accesoriosDePlataforma = (pid: string): Accesorio[] => ACCESORIOS.filter(a => piezasDe(a).some(p => encaja(p, pid)));
 export const accesoriosPorGrupo = (list: Accesorio[]) =>
   GRUPOS_ACC.map(g => [g, list.filter(a => a.grupo === g)] as [GrupoAcc, Accesorio[]]).filter(([, l]) => l.length);
 

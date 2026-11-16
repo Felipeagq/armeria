@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import SiteNav from '@/components/SiteNav';
+import SiteFooter from '@/components/SiteFooter';
+import { Migas } from '@/components/Migas';
 import BotonIA from '@/components/BotonIA';
 import { buscar } from '@/server/cascada';
 import { generarFicha, iaDisponible, iaSlug, permitir } from '@/server/ia';
@@ -41,7 +43,7 @@ export default async function BuscarPage({ searchParams }: Props) {
     <>
       <SiteNav current="armas" />
       <main id="main" className="wikimain">
-        <p className="crumbs"><Link href="/">← Armas</Link></p>
+        <Migas items={[{ label: 'Armas', href: '/' }, { label: 'Buscar' }]} />
         <h1>Buscar arma</h1>
         <form className="wsearch" action="/armas/buscar/" method="get" role="search">
           <label className="search"><IconSearch /><input type="search" name="q" defaultValue={q} aria-label="Nombre del arma" placeholder="Nombre del arma, p. ej. Glock 17, TTI Viper, CZ 75…" autoComplete="off" enterKeyHint="search" /></label>
@@ -85,6 +87,7 @@ export default async function BuscarPage({ searchParams }: Props) {
           )}
         </>)}
       </main>
+      <SiteFooter />
     </>
   );
 }

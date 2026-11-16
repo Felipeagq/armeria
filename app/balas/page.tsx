@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import SiteNav from '@/components/SiteNav';
+import SiteFooter from '@/components/SiteFooter';
 import { AMMO } from '@/three/data/ammo';
 
 export const metadata: Metadata = {
@@ -28,6 +29,7 @@ export default function BalasPage() {
           ))}
         </ul>
       </main>
+      <SiteFooter />
     </>
   );
 }

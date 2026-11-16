@@ -1,15 +1,14 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import SiteNav from '@/components/SiteNav';
+import SiteFooter from '@/components/SiteFooter';
 import { IconCube } from '@/components/icons';
-import { ACCESORIOS, GRUPOS_ACC, accDelGrupo, type GrupoAcc } from '@/three/data/accesorios';
+import { ACCESORIOS, GRUPOS_ACC, accDelGrupo, slugGrupo as slug } from '@/three/data/accesorios';
 
 export const metadata: Metadata = {
   title: 'Accesorios',
   description: 'Enciclopedia de accesorios: miras, bocachas, linternas y láseres, empuñaduras, cargadores y culatas. Datos técnicos, cómo funcionan, ventajas, límites y qué cambia en airsoft.',
 };
-
-const slug = (g: GrupoAcc) => g.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
 export default function AccesoriosPage() {
   return (
@@ -39,6 +38,7 @@ export default function AccesoriosPage() {
           </section>
         ))}
       </main>
+      <SiteFooter />
     </>
   );
 }

@@ -3,7 +3,7 @@
 // Los enlaces son anclas normales (funcionan sin JS); el cliente solo resalta la sección que se está leyendo.
 import { useEffect, useRef, useState } from 'react';
 
-export interface ItemIndice { id: string; label: string; n?: number }
+export interface ItemIndice { id: string; label: string; n?: number; /** Título del grupo; se muestra en la lista lateral cuando cambia. */ grupo?: string }
 
 export default function FichaIndice({ items, variante }: { items: ItemIndice[]; variante: 'lateral' | 'chips' }) {
   const [activo, setActivo] = useState(items[0]?.id);
@@ -45,8 +45,11 @@ export default function FichaIndice({ items, variante }: { items: ItemIndice[]; 
   return variante === 'lateral' ? (
     <nav className="wtoc" aria-label="En esta ficha">
       <ol>
-        {items.map(it => (
-          <li key={it.id}><a href={`#${it.id}`} aria-current={cur(it.id)} onClick={e => elegir(it.id, e.timeStamp)}>{it.label}{it.n !== undefined && <span>{it.n}</span>}</a></li>
+        {items.map((it, i) => (
+          <li key={it.id}>
+            {it.grupo && it.grupo !== items[i - 1]?.grupo && <p className="wtoc-g">{it.grupo}</p>}
+            <a href={`#${it.id}`} aria-current={cur(it.id)} onClick={e => elegir(it.id, e.timeStamp)}>{it.label}{it.n !== undefined && <span>{it.n}</span>}</a>
+          </li>
         ))}
       </ol>
     </nav>

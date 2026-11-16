@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import SiteNav from '@/components/SiteNav';
+import SiteFooter from '@/components/SiteFooter';
+import { Migas } from '@/components/Migas';
 import { AMMO, ammoById, modelsUsing } from '@/three/data/ammo';
 
 type Props = { params: Promise<{ id: string }> };
@@ -27,7 +29,7 @@ export default async function BalaPage({ params }: Props) {
     <>
       <SiteNav current="balas" />
       <main id="main" className="wikimain wide">
-        <p className="crumbs"><Link href="/balas/">← Munición</Link></p>
+        <Migas items={[{ label: 'Munición', href: '/balas/' }, { label: c.name }]} />
         <div className="wsheet">
           <figure className="spfig wplate">
             <img src={`/ammo/${ph.file}`} width={1600} height={1000} alt={ph.alt} decoding="async" />
@@ -63,6 +65,7 @@ export default async function BalaPage({ params }: Props) {
           </div>
         </div>
       </main>
+      <SiteFooter ancho />
     </>
   );
 }

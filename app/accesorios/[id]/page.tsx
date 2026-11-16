@@ -2,7 +2,9 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import SiteNav from '@/components/SiteNav';
-import { ACCESORIOS, accById } from '@/three/data/accesorios';
+import SiteFooter from '@/components/SiteFooter';
+import { Migas } from '@/components/Migas';
+import { ACCESORIOS, accById, slugGrupo } from '@/three/data/accesorios';
 import { armasCon, demo3d, genericosCon, TOTAL_3D } from '@/three/data/accesorios-compat';
 
 type Props = { params: Promise<{ id: string }> };
@@ -30,7 +32,7 @@ export default async function AccesorioPage({ params }: Props) {
     <>
       <SiteNav current="accesorios" />
       <main id="main" className="wikimain wide">
-        <p className="crumbs"><Link href="/accesorios/">← Accesorios</Link></p>
+        <Migas items={[{ label: 'Accesorios', href: '/accesorios/' }, { label: a.grupo, href: `/accesorios/#${slugGrupo(a.grupo)}` }, { label: a.nombre }]} />
         <div className={`wsheet ${ph ? '' : 'nophoto'}`}>
           {ph && (
             <figure className="spfig wplate">
@@ -98,6 +100,7 @@ export default async function AccesorioPage({ params }: Props) {
           </div>
         </div>
       </main>
+      <SiteFooter ancho />
     </>
   );
 }

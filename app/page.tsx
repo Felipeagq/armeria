@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import SiteNav from '@/components/SiteNav';
+import SiteFooter from '@/components/SiteFooter';
 import ArmasBuscador from '@/components/ArmasBuscador';
 import { ArmasLista } from '@/components/ArmasLista';
 import { ARMAS, ARMA_GROUPS, armaCards, has3d } from '@/three/data/armas';
@@ -24,6 +25,7 @@ export default function HomePage() {
           <ArmasBuscador cards={cards} groups={ARMA_GROUPS} />
         </Suspense>
       </main>
+      <SiteFooter />
     </>
   );
 }

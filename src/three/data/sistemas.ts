@@ -16,6 +16,9 @@ export interface Sistema {
   /** Algo más de detalle: página del glosario. */
   detalle: string;
   patron: RegExp;
+  /** Solo en el glosario de airsoft: sigla y nombre corto para las tarjetas de la ficha (p. ej. «AEG» · «Réplica eléctrica»). */
+  sigla?: string;
+  apodo?: string;
 }
 
 export const SISTEMAS: Sistema[] = [
@@ -62,15 +65,15 @@ export const SISTEMAS: Sistema[] = [
   { id: 'aeg', nombre: 'AEG (réplica eléctrica)', grupo: 'En las réplicas de airsoft',
     corto: 'Un motor y una batería mueven unos engranajes que comprimen un muelle y lanzan cada bola; la corredera o el cerrojo no retroceden.',
     detalle: 'AEG significa «automatic electric gun». Dentro del arma, un motor alimentado por batería hace girar los engranajes de la caja mecánica (gearbox), que tiran de un pistón contra un muelle y lo sueltan: el aire comprimido empuja la bola por el cañón. Es la réplica más extendida: rinde igual con frío o con calor y admite muchas piezas de mejora. A cambio, normalmente no hay retroceso real. «V2», «V3»… son versiones del gearbox y determinan qué piezas de repuesto encajan.',
-    patron: /\bAEG\b/ },
+    patron: /\bAEG\b/, sigla: 'AEG', apodo: 'Réplica eléctrica' },
   { id: 'aep', nombre: 'AEP (pistola eléctrica)', grupo: 'En las réplicas de airsoft',
     corto: 'Una pistola eléctrica: el mismo principio que un AEG, en formato pistola y con una batería pequeña.',
     detalle: 'AEP significa «automatic electric pistol». Un motor pequeño mueve el gearbox, como en un AEG, y algunas dispararán también en ráfaga. Es más barata, ligera y fácil de mantener que una de gas (GBB), y funciona igual con frío; a cambio, el tacto y el sonido son menos realistas porque la corredera no retrocede.',
-    patron: /\bAEP\b/ },
+    patron: /\bAEP\b/, sigla: 'AEP', apodo: 'Pistola eléctrica' },
   { id: 'blowback-gas', nombre: 'Blowback de gas (GBB)', grupo: 'En las réplicas de airsoft',
     corto: 'La corredera de la réplica (o el cerrojo, en un fusil) retrocede en cada disparo, empujada por parte del gas que lanza la bola: arma el martillo y carga la siguiente bola, como en el arma real.',
     detalle: 'GBB significa «gas blowback». El cargador guarda las bolas y el gas (green gas o CO₂). Al apretar el gatillo se libera una pequeña descarga: una parte empuja la bola por el cañón y otra empuja la corredera (o el cerrojo) hacia atrás, que arma el martillo y, al volver por el muelle, carga la siguiente bola. Da un retroceso y un ruido parecidos a los de una pistola real, y la corredera queda abierta al vaciar el cargador. A cambio rinde peor con frío (el gas pierde presión), hay que recargar el gas y es más cara y delicada que una réplica de corredera fija (NBB) o eléctrica (AEP). Ojo: es un término de la réplica. Las armas reales del catálogo no son blowback (las pistolas de 9×19 mm son de cierre bloqueado y retroceso corto, y los fusiles funcionan por gases); el blowback real (cerrojo sin cierre, retenido solo por su masa y el muelle) es propio de cartuchos de poca presión y de muchos subfusiles.',
-    patron: /\bGBB\b|blow-?back/i },
+    patron: /\bGBB\b|blow-?back/i, sigla: 'GBB', apodo: 'Blowback de gas' },
 ];
 
 export const GRUPOS_SISTEMA: GrupoSistema[] = ['Cómo se recarga', 'Cómo se cierra', 'Cómo se dispara', 'En las réplicas de airsoft'];
