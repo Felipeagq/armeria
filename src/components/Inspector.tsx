@@ -75,8 +75,8 @@ export default function Inspector() {
   };
 
   return (
-    <aside className="inspector">
-      <div className="ihead"><h3>En el lienzo</h3><span className="count">{n + 1} piezas</span></div>
+    <aside className="inspector" aria-label="Piezas en el lienzo">
+      <div className="ihead"><h2>En el lienzo</h2><span className="count">{n + 1} piezas</span></div>
       <div className="ilist">
         <SpecsPanel P={P} pid={build.platform} />
         <div className={`item ${baseSelected ? 'sel' : ''}`} onMouseEnter={() => hover('base')} onMouseLeave={() => hover(null)}>

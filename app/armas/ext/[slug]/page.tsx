@@ -86,7 +86,7 @@ export default async function FichaExternaPage({ params }: Props) {
 
             <h2>Datos</h2>
             <div className="fspecs">
-              <dl>{specRowsOf(f.specs).filter(([k]) => !keys.some(([key]) => key === k)).map(([k, label]) => <div className="sr" key={k}><dt>{label}</dt><dd>{f.specs[k]}{k === 'sistema' && <SistemaNotas texto={f.specs[k]} />}</dd></div>)}</dl>
+              <dl>{specRowsOf(f.specs).filter(([k]) => !keys.some(([key]) => key === k)).map(([k, label]) => <div className="sr" key={k}><dt>{label}</dt><dd>{f.specs[k]}{(k === 'sistema' || k === 'airsoft') && <SistemaNotas texto={f.specs[k]} campo={k} />}</dd></div>)}</dl>
               {!specRowsOf(f.specs).length && <p className="muted">La fuente no aporta datos técnicos estructurados.</p>}
               <p className="src">Fuente: {f.specs.fuente}. Consultado el {new Date(f.fetchedAt).toLocaleDateString('es-ES')}. Los valores varían según configuración y munición.</p>
             </div>

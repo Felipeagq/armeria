@@ -2,7 +2,7 @@
 // Valores de referencia de la carga militar/estándar (varían según fabricante, lote y longitud de cañón). «≈» = aproximado.
 // Las energías se calculan con E = ½·m·v² a partir de la masa y la velocidad indicadas.
 // Las fotos están en public/ammo/ y proceden de Wikimedia Commons (licencia libre: la atribución es obligatoria).
-import { MODELS } from './rifles';
+import { ARMAS } from './armas';
 
 export interface AmmoPhoto {
   file: string;
@@ -157,6 +157,60 @@ export const AMMO: Cartridge[] = [
     fuente: 'Wikipedia (.300 AAC Blackout)',
   },
   {
+    id: '9x19', name: '9×19 mm Parabellum', short: '9×19', kind: 'real', match: /9\s?×\s?19/,
+    tagline: 'El cartucho de pistola más extendido del mundo.',
+    key: [['Proyectil', '8,0 g · 9,01 mm'], ['Velocidad', '≈ 375 m/s'], ['Energía', '≈ 560 J']],
+    facts: [
+      ['Designación', '9×19 mm Parabellum (también 9 mm Luger y 9×19 mm NATO)'],
+      ['Origen', 'Alemania · 1901 (Georg Luger, DWM), para la pistola Luger P08'],
+      ['Diámetro del proyectil', '9,01 mm (.355 in)'],
+      ['Longitud de la vaina', '19,15 mm'],
+      ['Longitud total', '29,7 mm'],
+      ['Proyectil típico', '8,0 g (124 gr), FMJ de punta redondeada'],
+      ['Velocidad inicial', '≈ 375 m/s en pistola; algo más en subfusil'],
+      ['Energía en boca', '≈ 560 J'],
+      ['Presión máxima', '≈ 235 MPa (CIP) · 241 MPa (SAAMI); las cargas +P llegan a ≈ 265 MPa'],
+    ],
+    about: [
+      'Nació en 1901 como cartucho militar de pistola y se impuso como estándar de la OTAN para pistolas y subfusiles. En 1985 el ejército de EE. UU. lo adoptó con la Beretta M9 en lugar del .45 ACP. Hoy lo montan pistolas como la Glock 17, la Beretta M9A1 o la TTI Pit Viper, y subfusiles como el MP5 y el Uzi.',
+      'Su vaina es ligeramente cónica, y por eso los cargadores de 30 cartuchos de los subfusiles son curvos. Con ≈ 375 m/s es supersónico por poco (el sonido viaja a ≈ 343 m/s); existen cargas subsónicas de 147 gr (≈ 9,5 g) a ≈ 300 m/s para usar con supresor.',
+      'La foto lo muestra sobre papel milimetrado para dar la escala. En airsoft, las réplicas de estas pistolas disparan bolas de 6 mm: el cartucho solo existe en el arma real.',
+    ],
+    photo: {
+      file: '9x19.jpg', alt: 'Cartucho 9×19 mm Parabellum sobre papel milimetrado', caption: 'Cartucho 9×19 mm Parabellum (sobre papel milimetrado)',
+      author: 'Grasyl', license: 'CC BY-SA 4.0', licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+      source: 'https://commons.wikimedia.org/wiki/File:Cartridge_9x19mm_Parabellum_CC_BY-SA_4.0_by_Grasyl.jpg',
+    },
+    fuente: 'Wikipedia (9×19mm Parabellum); límites de presión CIP y SAAMI',
+  },
+  {
+    id: '45acp', name: '.45 ACP', short: '.45 ACP', kind: 'real', match: /\.45\s?(ACP|Auto)|11[,.]43/i,
+    tagline: 'El cartucho de pistola grueso y lento de la Colt M1911.',
+    key: [['Proyectil', '14,9 g · 11,5 mm'], ['Velocidad', '≈ 253 m/s'], ['Energía', '≈ 480 J']],
+    facts: [
+      ['Designación', '.45 ACP (Automatic Colt Pistol), también .45 Auto · 11,43×23 mm'],
+      ['Origen', 'EE. UU. · 1905–1911 (John Browning, para Colt y la pistola M1911)'],
+      ['Diámetro del proyectil', '11,5 mm (.452 in)'],
+      ['Longitud de la vaina', '22,8 mm'],
+      ['Longitud total', '32,4 mm'],
+      ['Proyectil típico', '14,9 g (230 gr), FMJ de punta redondeada'],
+      ['Velocidad inicial', '≈ 253 m/s (830 fps) con cañón de 127 mm'],
+      ['Energía en boca', '≈ 480 J'],
+      ['Presión máxima', '≈ 130 MPa (CIP) · 145 MPa (SAAMI); las cargas +P llegan a ≈ 158 MPa'],
+    ],
+    about: [
+      'Browning lo diseñó cuando las pruebas de Thompson y LaGarde (1904) concluyeron que el ejército de EE. UU. necesitaba un proyectil de al menos .45 pulgadas (≈ 11,4 mm). Fue el cartucho reglamentario de EE. UU. de 1911 a 1985, con la M1911, y sigue siendo muy popular entre tiradores deportivos y civiles.',
+      'Es un cartucho de baja presión (≈ 145 MPa, frente a ≈ 241 MPa del 9×19) con un proyectil pesado y lento. Con 14,9 g a ≈ 253 m/s es subsónico, de modo que no genera chasquido supersónico y encaja bien con supresores. A cambio, ocupa más espacio: una 1911 clásica lleva 7 u 8 cartuchos, y las de doble hilera, entre 10 y 14.',
+      'La foto lo muestra sobre papel milimetrado para dar la escala. Las réplicas de airsoft de la M1911 y de otras pistolas en .45 son muy populares, pero disparan bolas de 6 mm.',
+    ],
+    photo: {
+      file: '45acp.jpg', alt: 'Cartucho .45 ACP sobre papel milimetrado', caption: 'Cartucho .45 ACP (sobre papel milimetrado)',
+      author: 'Grasyl', license: 'CC BY-SA 4.0', licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
+      source: 'https://commons.wikimedia.org/wiki/File:Cartridge_.45_ACP_CC_BY-SA_4.0_by_Grasyl.jpg',
+    },
+    fuente: 'Wikipedia (.45 ACP); límites de presión CIP y SAAMI',
+  },
+  {
     id: 'bb6', name: 'Bola de 6 mm (airsoft)', short: 'Bola 6 mm', kind: 'airsoft',
     tagline: 'La «bala» de todas las réplicas de airsoft.',
     key: [['Diámetro', '≈ 5,95 mm'], ['Peso', '0,20–0,43 g'], ['Energía', '≈ 0,8–1,5 J']],
@@ -190,4 +244,4 @@ export const ammoForCalibre = (calibre?: string): Cartridge[] => (calibre ? AMMO
 
 /** Armas del catálogo cuyo calibre menciona este cartucho (las réplicas de airsoft usan todas la bola de 6 mm). */
 export const modelsUsing = (c: Cartridge) =>
-  c.kind === 'airsoft' ? MODELS : MODELS.filter(m => c.match?.test(m.common.calibre ?? '') || m.variants.some(v => c.match?.test(v.specs.calibre ?? '')));
+  c.kind === 'airsoft' ? ARMAS : ARMAS.filter(a => c.match?.test(a.common.calibre ?? '') || a.variants.some(v => c.match?.test(v.specs.calibre ?? '')));

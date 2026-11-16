@@ -23,7 +23,7 @@ export function SpecRows({ P, skip = [], glosario = false }: { P: Platform; skip
   return (
     <dl>
       {specRows(P).filter(([k]) => !skip.includes(k)).map(([k, label]) => (
-        <div className="sr" key={k}><dt>{label}</dt><dd>{P.specs?.[k]}{k === 'calibre' && <AmmoLinks calibre={P.specs?.[k]} />}{glosario && k === 'sistema' && <SistemaNotas texto={P.specs?.[k]} />}</dd></div>
+        <div className="sr" key={k}><dt>{label}</dt><dd>{P.specs?.[k]}{k === 'calibre' && <AmmoLinks calibre={P.specs?.[k]} />}{glosario && (k === 'sistema' || k === 'airsoft') && <SistemaNotas texto={P.specs?.[k]} campo={k} />}</dd></div>
       ))}
     </dl>
   );

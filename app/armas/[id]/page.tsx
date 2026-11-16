@@ -5,7 +5,7 @@ import SiteNav from '@/components/SiteNav';
 import { AccesoriosCompat } from '@/components/AccesoriosCompat';
 import { SistemaNotas } from '@/components/SistemaNotas';
 import { ammoForCalibre } from '@/three/data/ammo';
-import { ARMAS, armaById, armaPhoto, has3d, refSpecs, specRowsOf } from '@/three/data/armas';
+import { ARMAS, SPEC_LABELS, armaById, armaPhoto, has3d, refSpecs, specRowsOf } from '@/three/data/armas';
 import { photoUrl } from '@/three/data/photos';
 import type { Specs } from '@/three/types';
 
@@ -21,11 +21,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: `${a.name}: ficha técnica`, description: `${a.name} (${a.maker}): ${[s.calibre, s.sistema, s.cadencia].filter(Boolean).join(', ')}. Datos del arma real y de su réplica de airsoft.` };
 }
 
+/** Datos de una variante que se muestran como cifras (el resto, «Notas», va aparte). */
+const STAT_KEYS: (keyof Specs)[] = ['calibre', 'peso', 'cañon', 'sistema', 'cadencia', 'velocidad', 'alcance', 'cargador', 'airsoft'];
+
 /** Datos que se destacan arriba. */
 const KEY_FACTS: [keyof Specs, string][] = [['calibre', 'Calibre'], ['peso', 'Peso'], ['cadencia', 'Cadencia']];
 
+/** Separa la cifra principal de su matiz: «3,12–3,85 kg vacío (11"–20")» → «3,12–3,85 kg» + «vacío (11"–20")». Sin cifra al principio, devuelve null. */
+function partirCifra(v: string): { cifra: string; matiz: string } | null {
+  const m = v.match(/^(≈?\s*\d[\d.,]*(?:\s?[–×x-]\s?\d[\d.,]*)*(?:\s?(?:mm|kg|g|m\/s|m|J|disp\.\/min))?)(?=\s|$|·|\()\s*(.*)$/);
+  return m && m[1].trim() ? { cifra: m[1].trim(), matiz: m[2].trim() } : null;
+}
+
 function Rows({ specs, skip = [] }: { specs: Specs; skip?: string[] }) {
-  return <dl>{specRowsOf(specs).filter(([k]) => !skip.includes(k)).map(([k, label]) => <div className="sr" key={k}><dt>{label}</dt><dd>{specs[k]}{k === 'sistema' && <SistemaNotas texto={specs[k]} />}</dd></div>)}</dl>;
+  return <dl>{specRowsOf(specs).filter(([k]) => !skip.includes(k)).map(([k, label]) => <div className="sr" key={k}><dt>{label}</dt><dd>{specs[k]}{(k === 'sistema' || k === 'airsoft') && <SistemaNotas texto={specs[k]} campo={k} />}</dd></div>)}</dl>;
 }
 
 export default async function ArmaPage({ params }: Props) {
@@ -38,6 +47,9 @@ export default async function ArmaPage({ params }: Props) {
   const ammo = ammoForCalibre(ref.calibre);
   const keys = KEY_FACTS.filter(([k]) => ref[k]);
   const montable = has3d(a);
+  const stats = SPEC_LABELS.filter(([k]) => STAT_KEYS.includes(k) && a.variants.some(v => v.specs[k]));
+  const hayNotas = a.variants.some(v => v.specs.extra);
+  const hayVariantes = a.variants.some(v => specRowsOf(v.specs).length || v.platform);
 
   return (
     <>
@@ -47,7 +59,9 @@ export default async function ArmaPage({ params }: Props) {
         <div className={`wsheet ${ph ? '' : 'nophoto'}`}>
           {ph && (
             <figure className="spfig wplate">
-              <img src={photoUrl(ph)} width={1600} height={1000} alt={`${a.name}: foto ${ph.kind === 'real' ? 'del arma real' : 'de la réplica de airsoft'}`} decoding="async" />
+              <div className={`wframe ${ph.fit ?? 'cutout'}`} style={ph.fit === 'scene' ? ({ '--ph': `url(${photoUrl(ph)})` } as React.CSSProperties) : undefined}>
+                <img src={photoUrl(ph)} width={1600} height={1000} alt={`${a.name}: foto ${ph.kind === 'real' ? 'del arma real' : 'de la réplica de airsoft'}`} decoding="async" />
+              </div>
               <figcaption>
                 {ph.kind === 'real' ? 'Arma real' : 'Réplica de airsoft'}.{ph.author && ` ${ph.author}.`}
                 {ph.license && <> {ph.licenseUrl ? <a href={ph.licenseUrl} target="_blank" rel="noopener noreferrer">{ph.license}</a> : ph.license}.</>}
@@ -68,36 +82,73 @@ export default async function ArmaPage({ params }: Props) {
             </div>
 
             {keys.length > 0 && (
-              <div className="fkeys">
+              <div className="fkeys plate">
                 {keys.map(([k, label]) => {
                   const c = k === 'calibre' ? ammo[0] : undefined;
+                  const t = String(ref[k]); const pc = partirCifra(t);
+                  const valor = pc ? <b className="num">{pc.cifra}{pc.matiz && <small>{pc.matiz}</small>}</b> : <b>{t}</b>;
                   return c
-                    ? <Link className="fkey fkey-link" key={k} href={`/balas/${c.id}/`} title={`Ver la ficha de ${c.name}`}><span>{label}</span><b>{ref[k]}</b></Link>
-                    : <div className="fkey" key={k}><span>{label}</span><b>{ref[k]}</b></div>;
+                    ? <Link className="fkey fkey-link" key={k} href={`/balas/${c.id}/`} title={`Ver la ficha de ${c.name}`}><span>{label}</span>{valor}</Link>
+                    : <div className="fkey" key={k}><span>{label}</span>{valor}</div>;
                 })}
               </div>
             )}
 
             <h2>Datos</h2>
-            <div className="fspecs"><Rows specs={a.common} skip={keys.map(([k]) => k)} /></div>
+            <div className="fspecs"><Rows specs={a.common} skip={[...keys.map(([k]) => k), 'airsoft']} /></div>
 
-            <h2>Variantes</h2>
-            {a.variants.map(v => (
-              <section className="wvar" key={v.id} id={v.id}>
-                <h3>
-                  <span>{v.name}</span>
-                  {v.platform
-                    ? <Link className="ghost sm" href={`/montar/?m=${v.platform}`}>Montar en 3D</Link>
-                    : <i className="wtag">Solo ficha</i>}
-                </h3>
-                <div className="fspecs"><Rows specs={v.specs} /></div>
-              </section>
-            ))}
+            {ref.airsoft && (<>
+              <h2>Réplica de airsoft</h2>
+              <div className="wrep">
+                <p>{ref.airsoft}</p>
+                <SistemaNotas texto={ref.airsoft} campo="airsoft" />
+              </div>
+            </>)}
+
+            {hayVariantes && (<>
+              <h2>Variantes</h2>
+              <div className="wvs" data-multi={a.variants.length > 1 || undefined} style={{ '--n': a.variants.length, '--rows': 2 + stats.length + (hayNotas ? 1 : 0) } as React.CSSProperties}>
+                {a.variants.map(v => (
+                  <section className="wv" key={v.id} id={v.id} aria-labelledby={`v-${v.id}`}>
+                    <div className="wv-head">
+                      <h3 id={`v-${v.id}`}>{v.name}</h3>
+                      {!v.platform && <i className="wtag">Solo ficha</i>}
+                    </div>
+                    {stats.map(([k, label]) => {
+                      const t = v.specs[k] ? String(v.specs[k]) : '';
+                      const pc = t ? partirCifra(t) : null;
+                      return t
+                        ? <div className="wv-stat" key={k}>
+                            <span className="wv-k">{label}</span>
+                            {pc ? <><b>{pc.cifra}</b>{pc.matiz && <small>{pc.matiz}</small>}</> : <b className="txt">{t}</b>}
+                            {(k === 'sistema' || k === 'airsoft') && <SistemaNotas texto={t} campo={k} />}
+                          </div>
+                        : <div className="wv-stat none" key={k} aria-hidden="true"><span className="wv-k">{label}</span><b>—</b></div>;
+                    })}
+                    {hayNotas && (v.specs.extra
+                      ? <p className="wv-note"><span className="wv-k">Notas</span>{v.specs.extra}</p>
+                      : <div className="wv-note none" aria-hidden="true" />)}
+                    <div className={`wv-act${v.platform ? '' : ' none'}`}>{v.platform && <Link className="ghost sm" href={`/montar/?m=${v.platform}`} aria-label={`Montar en 3D: ${a.name} ${v.name}`}>Montar en 3D</Link>}</div>
+                  </section>
+                ))}
+              </div>
+            </>)}
             <p className="src">Datos del arma real. Fuente: {a.common.fuente ?? 'sin indicar'}. Los valores varían según configuración y munición.</p>
 
             {ammo.length > 0 && (<>
               <h2>Munición</h2>
-              <ul className="wlist">{ammo.map(c => <li key={c.id}><Link href={`/balas/${c.id}/`}>{c.name}</Link><span>{c.tagline}</span></li>)}</ul>
+              <ul className="wammo">
+                {ammo.map(c => (
+                  <li key={c.id}>
+                    <Link href={`/balas/${c.id}/`}>
+                      <span className="wi-thumb"><img src={`/ammo/${c.photo.file}`} alt="" width={160} height={120} loading="lazy" decoding="async" /></span>
+                      <span className="wa-name">{c.name}</span>
+                      <span className="wa-tag">{c.tagline}</span>
+                      <span className="wa-key">{c.key.map(([l, v]) => <span key={l}><i>{l}</i>{v}</span>)}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </>)}
 
             <AccesoriosCompat arma={a} />

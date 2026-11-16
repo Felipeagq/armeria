@@ -49,7 +49,7 @@ export default function Catalog() {
   const list = comp.filter(p => (cat === 'all' || p.type === cat) && (!q || norm(`${p.name} ${SLOT_LABEL[p.type]}`).includes(q)));
 
   return (
-    <aside className="catalog">
+    <aside className="catalog" aria-label="Catálogo de piezas">
       <div className="pad">
         <label className="search"><IconSearch /><input type="search" aria-label="Buscar piezas" placeholder="Buscar piezas…" autoComplete="off" value={search} onChange={e => setSearch(e.target.value)} /></label>
       </div>

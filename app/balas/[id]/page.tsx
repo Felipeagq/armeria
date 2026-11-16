@@ -52,7 +52,9 @@ export default async function BalaPage({ params }: Props) {
             <div className="wprose">{c.about.map((p, k) => <p key={k}>{p}</p>)}</div>
 
             <h2>{c.kind === 'airsoft' ? 'Réplicas del catálogo' : 'Armas del catálogo que lo usan'}</h2>
-            <ul className="wlist">{models.map(m => <li key={m.id}><Link href={`/armas/${m.id}/`}>{m.name}</Link><span>{m.maker}</span></li>)}</ul>
+            {models.length
+              ? <ul className="wlist">{models.map(m => <li key={m.id}><Link href={`/armas/${m.id}/`}>{m.name}</Link><span>{m.maker}</span></li>)}</ul>
+              : <div className="wprose"><p>Ninguna arma del catálogo usa este cartucho todavía. <Link href="/armas/buscar/">Busca un arma</Link> para consultarla.</p></div>}
 
             <div className="wnav">
               {prev ? <Link className="ghost" href={`/balas/${prev.id}/`}>← {prev.short}</Link> : <span />}

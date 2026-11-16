@@ -14,14 +14,16 @@ export interface Photo {
   licenseUrl?: string;
   /** Página de origen (Wikimedia Commons). Sin ella, la foto es propia o de uso personal y no se enlaza. */
   source?: string;
+  /** 'scene' = foto con escenario real (se rellena el marco con una copia difuminada). Por omisión es un recorte o fondo liso: se funde con el marco gris. */
+  fit?: 'scene';
 }
 
 export const PHOTOS: Record<string, Photo> = {
   m9a1: { file: 'm9a1.webp', kind: 'real', author: 'Imagen de producto (Beretta)' },
   pitviper: { file: 'pitviper.jpg', kind: 'real', author: 'Imagen de producto (TTI)' },
   l119: { file: 'l119.png', kind: 'airsoft', author: 'Imagen de catálogo (réplica L119A2)' },
-  mk18: { file: 'mk18.jpg', kind: 'real', author: "Riot1013", license: "CC BY-SA 4.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0", source: "https://commons.wikimedia.org/wiki/File:MK18.jpg" },
-  mcx: { file: 'mcx.jpg', kind: 'real', author: 'Mike Searson', license: 'CC BY-SA 4.0', licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0', source: 'https://commons.wikimedia.org/wiki/File:SIG-MCX-Rifle.jpeg' },
+  mk18: { file: 'mk18.jpg', fit: 'scene', kind: 'real', author: "Riot1013", license: "CC BY-SA 4.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0", source: "https://commons.wikimedia.org/wiki/File:MK18.jpg" },
+  mcx: { file: 'mcx.jpg', fit: 'scene', kind: 'real', author: 'Mike Searson', license: 'CC BY-SA 4.0', licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0', source: 'https://commons.wikimedia.org/wiki/File:SIG-MCX-Rifle.jpeg' },
   g36: { file: 'g36.png', kind: 'real', author: 'DomoK / Auge=mit', license: 'CC BY-SA 4.0', licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0', source: 'https://commons.wikimedia.org/wiki/File:Gewehr_G36_noBG.png' },
   glock17: {
     file: 'glock17.jpg', kind: 'real', author: 'U.S. ATF',
@@ -39,12 +41,12 @@ export const PHOTOS: Record<string, Photo> = {
     source: "https://commons.wikimedia.org/wiki/File:HK416N.png",
   },
   sig516: {
-    file: 'sig516.jpg', kind: 'real', author: "Rizuan",
+    file: 'sig516.jpg', fit: 'scene', kind: 'real', author: "Rizuan",
     license: "CC BY-SA 3.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0",
     source: "https://commons.wikimedia.org/wiki/File:SIG_SG_516_14.5%E2%80%B3.jpg",
   },
   ak74m: {
-    file: 'ak74m.jpg', kind: 'airsoft', author: "Алексей Трефилов",
+    file: 'ak74m.jpg', fit: 'scene', kind: 'airsoft', author: "Алексей Трефилов",
     license: "CC BY-SA 4.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0",
     source: "https://commons.wikimedia.org/wiki/File:AK-74M_airsoft_01.jpg",
   },

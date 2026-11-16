@@ -136,7 +136,7 @@ export default function App() {
   return (
     <div className="app">
       <Header />
-      <div id="main" tabIndex={-1} className={`layout ${dragging ? 'dragging' : ''}`} data-panel={panel}>
+      <main id="main" tabIndex={-1} className={`layout ${dragging ? 'dragging' : ''}`} data-panel={panel}>
         <Catalog />
         <Viewport />
         <Inspector />
@@ -147,7 +147,7 @@ export default function App() {
           <button aria-pressed={panel === 'parts'} onClick={() => useStore.getState().setPanel('parts')}>Catálogo</button>
           <button aria-pressed={panel === 'build'} onClick={() => useStore.getState().setPanel('build')}>Lienzo <b>{pieceCount}</b></button>
         </nav>
-      </div>
+      </main>
       {modal === 'picker' && <PickerModal />}
       {modal === 'export' && <ExportModal />}
       {modal === 'models' && <ModelsModal records={records} onPickFile={openImport} onDeleted={id => { setRecords(r => r.filter(x => x.id !== id)); const s = useStore.getState(); s.bumpRegistry(); s.hydrate(s.build); s.notify('Modelo eliminado'); }} />}

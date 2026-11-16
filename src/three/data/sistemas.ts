@@ -1,8 +1,12 @@
-// Glosario de sistemas de funcionamiento, cerrojos y mecanismos de disparo que aparecen en el campo «Sistema / cerrojo».
+// Glosario de sistemas de funcionamiento, cerrojos y mecanismos de disparo que aparecen en el campo «Sistema / cerrojo»,
+// y de términos de las réplicas de airsoft que aparecen en el campo «Réplica airsoft».
 // Módulo ligero (sin geometría ni three): lo usan páginas de servidor y componentes de cliente.
 // `patron` detecta el término en el texto de una ficha (en español o en inglés, como llega de Wikipedia).
 
-export type GrupoSistema = 'Cómo se recarga' | 'Cómo se cierra' | 'Cómo se dispara';
+export type GrupoSistema = 'Cómo se recarga' | 'Cómo se cierra' | 'Cómo se dispara' | 'En las réplicas de airsoft';
+/** Campo de la ficha donde se busca cada grupo: el glosario de airsoft se lee en «Réplica airsoft»; el resto, en «Sistema / cerrojo». */
+export type CampoGlosario = 'sistema' | 'airsoft';
+export const campoDe = (g: GrupoSistema): CampoGlosario => (g === 'En las réplicas de airsoft' ? 'airsoft' : 'sistema');
 export interface Sistema {
   id: string;
   nombre: string;
@@ -55,9 +59,22 @@ export const SISTEMAS: Sistema[] = [
     corto: 'En vez de un martillo, un percutor con muelle golpea directamente el fulminante; el gatillo termina de tensarlo.',
     detalle: 'Es el sistema de la Glock. Tiene menos piezas y un tacto de gatillo uniforme. El seguro «Safe Action» agrupa tres seguros automáticos (del gatillo, del percutor y de caída) que solo se liberan al apretar el gatillo.',
     patron: /percutor lanzado|striker/i },
+  { id: 'aeg', nombre: 'AEG (réplica eléctrica)', grupo: 'En las réplicas de airsoft',
+    corto: 'Un motor y una batería mueven unos engranajes que comprimen un muelle y lanzan cada bola; la corredera o el cerrojo no retroceden.',
+    detalle: 'AEG significa «automatic electric gun». Dentro del arma, un motor alimentado por batería hace girar los engranajes de la caja mecánica (gearbox), que tiran de un pistón contra un muelle y lo sueltan: el aire comprimido empuja la bola por el cañón. Es la réplica más extendida: rinde igual con frío o con calor y admite muchas piezas de mejora. A cambio, normalmente no hay retroceso real. «V2», «V3»… son versiones del gearbox y determinan qué piezas de repuesto encajan.',
+    patron: /\bAEG\b/ },
+  { id: 'aep', nombre: 'AEP (pistola eléctrica)', grupo: 'En las réplicas de airsoft',
+    corto: 'Una pistola eléctrica: el mismo principio que un AEG, en formato pistola y con una batería pequeña.',
+    detalle: 'AEP significa «automatic electric pistol». Un motor pequeño mueve el gearbox, como en un AEG, y algunas dispararán también en ráfaga. Es más barata, ligera y fácil de mantener que una de gas (GBB), y funciona igual con frío; a cambio, el tacto y el sonido son menos realistas porque la corredera no retrocede.',
+    patron: /\bAEP\b/ },
+  { id: 'blowback-gas', nombre: 'Blowback de gas (GBB)', grupo: 'En las réplicas de airsoft',
+    corto: 'La corredera de la réplica (o el cerrojo, en un fusil) retrocede en cada disparo, empujada por parte del gas que lanza la bola: arma el martillo y carga la siguiente bola, como en el arma real.',
+    detalle: 'GBB significa «gas blowback». El cargador guarda las bolas y el gas (green gas o CO₂). Al apretar el gatillo se libera una pequeña descarga: una parte empuja la bola por el cañón y otra empuja la corredera (o el cerrojo) hacia atrás, que arma el martillo y, al volver por el muelle, carga la siguiente bola. Da un retroceso y un ruido parecidos a los de una pistola real, y la corredera queda abierta al vaciar el cargador. A cambio rinde peor con frío (el gas pierde presión), hay que recargar el gas y es más cara y delicada que una réplica de corredera fija (NBB) o eléctrica (AEP). Ojo: es un término de la réplica. Las armas reales del catálogo no son blowback (las pistolas de 9×19 mm son de cierre bloqueado y retroceso corto, y los fusiles funcionan por gases); el blowback real (cerrojo sin cierre, retenido solo por su masa y el muelle) es propio de cartuchos de poca presión y de muchos subfusiles.',
+    patron: /\bGBB\b|blow-?back/i },
 ];
 
-export const GRUPOS_SISTEMA: GrupoSistema[] = ['Cómo se recarga', 'Cómo se cierra', 'Cómo se dispara'];
+export const GRUPOS_SISTEMA: GrupoSistema[] = ['Cómo se recarga', 'Cómo se cierra', 'Cómo se dispara', 'En las réplicas de airsoft'];
 
-/** Términos del glosario presentes en el texto de «Sistema / cerrojo» de una ficha, en orden del glosario. */
-export const sistemasDe = (texto?: string): Sistema[] => (texto ? SISTEMAS.filter(s => s.patron.test(texto)) : []);
+/** Términos del glosario presentes en el texto de un campo de la ficha («Sistema / cerrojo» por defecto, o «Réplica airsoft»), en orden del glosario. */
+export const sistemasDe = (texto?: string, campo: CampoGlosario = 'sistema'): Sistema[] =>
+  (texto ? SISTEMAS.filter(s => campoDe(s.grupo) === campo && s.patron.test(texto)) : []);

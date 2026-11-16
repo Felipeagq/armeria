@@ -5,7 +5,7 @@ import { AMMO } from '@/three/data/ammo';
 
 export const metadata: Metadata = {
   title: 'Munición',
-  description: 'Enciclopedia de munición: los cartuchos de las armas del catálogo (5,56×45, 5,45×39, 7,62×39, 7,62×51, .300 BLK) y la bola de 6 mm del airsoft.',
+  description: 'Enciclopedia de munición: los cartuchos de las armas del catálogo (5,56×45, 5,45×39, 7,62×39, 7,62×51, .300 BLK, 9×19 y .45 ACP) y la bola de 6 mm del airsoft.',
 };
 
 export default function BalasPage() {
