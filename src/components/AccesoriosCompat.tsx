@@ -9,7 +9,7 @@ export function AccesoriosCompat({ arma }: { arma: Arma }) {
   if (!grupos.length) return null;
   return (
     <>
-      <h2>Accesorios compatibles</h2>
+      <h2 id="sec-accesorios">Accesorios compatibles</h2>
       {grupos.map(([g, list]) => (
         <section className="wacg" key={g} aria-label={g}>
           <h3>{g}<span>{list.length}</span></h3>

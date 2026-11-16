@@ -242,6 +242,31 @@ export const ammoById = (id: string) => AMMO.find(c => c.id === id);
 /** Cartuchos que menciona el texto de calibre de un arma (p. ej. «5,56×45 mm NATO · .300 BLK»). */
 export const ammoForCalibre = (calibre?: string): Cartridge[] => (calibre ? AMMO.filter(c => c.match?.test(calibre)) : []);
 
+/** 1510 → «1.510», 4,2 → «4,2» (puntos de millar y coma decimal, como el resto de la ficha). */
+const esNum = (n: number) => String(n).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+/**
+ * Energía en boca de un arma: E = ½·m·v² con la masa del proyectil del cartucho y la velocidad inicial
+ * propia del arma, que depende de su cañón y no es la del cartucho de referencia. Devuelve null si el
+ * arma no publica una velocidad en m/s o el cartucho no indica la masa. Un rango («900–915 m/s») usa su punto medio.
+ */
+export function energiaEnBoca(velocidad: string | undefined, c: Cartridge | undefined): { valor: string; base: string } | null {
+  if (!velocidad || !c) return null;
+  const masa = c.key.find(([etiqueta]) => etiqueta === 'Proyectil')?.[1].match(/^(\d+(?:,\d+)?)\s*g\b/);
+  const vel = velocidad.match(/(\d+(?:[.,]\d+)?)(?:\s*[–-]\s*(\d+(?:[.,]\d+)?))?\s*m\/s/);
+  if (!masa || !vel) return null;
+
+  const kg = parseFloat(masa[1].replace(',', '.')) / 1000;
+  const v1 = parseFloat(vel[1].replace(',', '.'));
+  const v = vel[2] ? (v1 + parseFloat(vel[2].replace(',', '.'))) / 2 : v1;
+  const j = 0.5 * kg * v * v;
+  if (!Number.isFinite(j) || j <= 0) return null;
+
+  // Redondeo a la decena, como las energías de las fichas de munición («≈ 1.770 J»).
+  const redondeada = j >= 100 ? Math.round(j / 10) * 10 : j >= 10 ? Math.round(j) : Math.round(j * 10) / 10;
+  return { valor: `≈ ${esNum(redondeada)} J`, base: `${masa[1]} g a ${vel[0].trim()}` };
+}
+
 /** Armas del catálogo cuyo calibre menciona este cartucho (las réplicas de airsoft usan todas la bola de 6 mm). */
 export const modelsUsing = (c: Cartridge) =>
   c.kind === 'airsoft' ? ARMAS : ARMAS.filter(a => c.match?.test(a.common.calibre ?? '') || a.variants.some(v => c.match?.test(v.specs.calibre ?? '')));

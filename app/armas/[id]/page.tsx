@@ -3,8 +3,10 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import SiteNav from '@/components/SiteNav';
 import { AccesoriosCompat } from '@/components/AccesoriosCompat';
+import FichaIndice, { type ItemIndice } from '@/components/FichaIndice';
 import { SistemaNotas } from '@/components/SistemaNotas';
-import { ammoForCalibre } from '@/three/data/ammo';
+import { accesoriosPara } from '@/three/data/accesorios-compat';
+import { ammoForCalibre, energiaEnBoca } from '@/three/data/ammo';
 import { ARMAS, SPEC_LABELS, armaById, armaPhoto, has3d, refSpecs, specRowsOf } from '@/three/data/armas';
 import { photoUrl } from '@/three/data/photos';
 import type { Specs } from '@/three/types';
@@ -25,11 +27,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 const STAT_KEYS: (keyof Specs)[] = ['calibre', 'peso', 'cañon', 'sistema', 'cadencia', 'velocidad', 'alcance', 'cargador', 'airsoft'];
 
 /** Datos que se destacan arriba. */
-const KEY_FACTS: [keyof Specs, string][] = [['calibre', 'Calibre'], ['peso', 'Peso'], ['cadencia', 'Cadencia']];
+const KEY_FACTS: [keyof Specs, string][] = [['calibre', 'Calibre'], ['peso', 'Peso'], ['cadencia', 'Cadencia'], ['alcance', 'Alcance eficaz']];
 
 /** Separa la cifra principal de su matiz: «3,12–3,85 kg vacío (11"–20")» → «3,12–3,85 kg» + «vacío (11"–20")». Sin cifra al principio, devuelve null. */
 function partirCifra(v: string): { cifra: string; matiz: string } | null {
-  const m = v.match(/^(≈?\s*\d[\d.,]*(?:\s?[–×x-]\s?\d[\d.,]*)*(?:\s?(?:mm|kg|g|m\/s|m|J|disp\.\/min))?)(?=\s|$|·|\()\s*(.*)$/);
+  const m = v.match(/^((?:Hasta\s+)?≈?\s*\d[\d.,]*(?:\s?[–×x-]\s?\d[\d.,]*)*(?:\s?(?:mm|kg|g|m\/s|m|J|disp\.\/min))?)(?=\s|$|·|\()\s*(.*)$/);
   return m && m[1].trim() ? { cifra: m[1].trim(), matiz: m[2].trim() } : null;
 }
 
@@ -45,11 +47,21 @@ export default async function ArmaPage({ params }: Props) {
   const ph = armaPhoto(a);
   const ref = refSpecs(a);
   const ammo = ammoForCalibre(ref.calibre);
-  const keys = KEY_FACTS.filter(([k]) => ref[k]);
+  // Un dato sin cifra («Depende del cañón y la munición») no cabe en una tesela: queda en la tabla.
+  const keys = KEY_FACTS.filter(([k]) => ref[k] && (k !== 'alcance' || partirCifra(String(ref[k]))));
+  const energia = energiaEnBoca(ref.velocidad, ammo[0]);
   const montable = has3d(a);
   const stats = SPEC_LABELS.filter(([k]) => STAT_KEYS.includes(k) && a.variants.some(v => v.specs[k]));
   const hayNotas = a.variants.some(v => v.specs.extra);
   const hayVariantes = a.variants.some(v => specRowsOf(v.specs).length || v.platform);
+  const nAcc = accesoriosPara(a).length;
+  const secciones: ItemIndice[] = [
+    { id: 'sec-datos', label: 'Datos' },
+    ...(ref.airsoft ? [{ id: 'sec-replica', label: 'Réplica de airsoft' }] : []),
+    ...(hayVariantes ? [{ id: 'sec-variantes', label: 'Variantes', n: a.variants.length }] : []),
+    ...(ammo.length ? [{ id: 'sec-municion', label: 'Munición' }] : []),
+    ...(nAcc ? [{ id: 'sec-accesorios', label: 'Accesorios', n: nAcc }] : []),
+  ];
 
   return (
     <>
@@ -58,6 +70,7 @@ export default async function ArmaPage({ params }: Props) {
         <p className="crumbs"><Link href="/">← Armas</Link></p>
         <div className={`wsheet ${ph ? '' : 'nophoto'}`}>
           {ph && (
+            <div className="wside">
             <figure className="spfig wplate">
               <div className={`wframe ${ph.fit ?? 'cutout'}`} style={ph.fit === 'scene' ? ({ '--ph': `url(${photoUrl(ph)})` } as React.CSSProperties) : undefined}>
                 <img src={photoUrl(ph)} width={1600} height={1000} alt={`${a.name}: foto ${ph.kind === 'real' ? 'del arma real' : 'de la réplica de airsoft'}`} decoding="async" />
@@ -68,6 +81,8 @@ export default async function ArmaPage({ params }: Props) {
                 {ph.source && <> <a href={ph.source} target="_blank" rel="noopener noreferrer">Wikimedia Commons</a></>}
               </figcaption>
             </figure>
+            <FichaIndice variante="lateral" items={secciones} />
+            </div>
           )}
           <div className="wbody">
             <div className="whead">
@@ -81,8 +96,8 @@ export default async function ArmaPage({ params }: Props) {
               </div>
             </div>
 
-            {keys.length > 0 && (
-              <div className="fkeys plate">
+            {(keys.length > 0 || energia) && (
+              <div className="fkeys plate" style={{ '--fk': Math.min(keys.length + (energia ? 1 : 0), 3) } as React.CSSProperties}>
                 {keys.map(([k, label]) => {
                   const c = k === 'calibre' ? ammo[0] : undefined;
                   const t = String(ref[k]); const pc = partirCifra(t);
@@ -91,14 +106,17 @@ export default async function ArmaPage({ params }: Props) {
                     ? <Link className="fkey fkey-link" key={k} href={`/balas/${c.id}/`} title={`Ver la ficha de ${c.name}`}><span>{label}</span>{valor}</Link>
                     : <div className="fkey" key={k}><span>{label}</span>{valor}</div>;
                 })}
+                {energia && <div className="fkey" title="Energía en boca: ½·m·v², con la masa del proyectil del cartucho y la velocidad inicial de esta arma"><span>Energía en boca</span><b className="num">{energia.valor}<small>{energia.base}</small></b></div>}
               </div>
             )}
 
-            <h2>Datos</h2>
+            <FichaIndice variante="chips" items={secciones} />
+
+            <h2 id="sec-datos">Datos</h2>
             <div className="fspecs"><Rows specs={a.common} skip={[...keys.map(([k]) => k), 'airsoft']} /></div>
 
             {ref.airsoft && (<>
-              <h2>Réplica de airsoft</h2>
+              <h2 id="sec-replica">Réplica de airsoft</h2>
               <div className="wrep">
                 <p>{ref.airsoft}</p>
                 <SistemaNotas texto={ref.airsoft} campo="airsoft" />
@@ -106,7 +124,7 @@ export default async function ArmaPage({ params }: Props) {
             </>)}
 
             {hayVariantes && (<>
-              <h2>Variantes</h2>
+              <h2 id="sec-variantes">Variantes</h2>
               <div className="wvs" data-multi={a.variants.length > 1 || undefined} style={{ '--n': a.variants.length, '--rows': 2 + stats.length + (hayNotas ? 1 : 0) } as React.CSSProperties}>
                 {a.variants.map(v => (
                   <section className="wv" key={v.id} id={v.id} aria-labelledby={`v-${v.id}`}>
@@ -136,7 +154,7 @@ export default async function ArmaPage({ params }: Props) {
             <p className="src">Datos del arma real. Fuente: {a.common.fuente ?? 'sin indicar'}. Los valores varían según configuración y munición.</p>
 
             {ammo.length > 0 && (<>
-              <h2>Munición</h2>
+              <h2 id="sec-municion">Munición</h2>
               <ul className="wammo">
                 {ammo.map(c => (
                   <li key={c.id}>
