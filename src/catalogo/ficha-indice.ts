@@ -1,8 +1,8 @@
 // Lógica compartida de la ficha que usan la página (servidor) y el componente de variantes (cliente): sin imports de servidor.
-import type { Cifras, DatosFicha, Par, VistaVariante } from './ficha';
+import type { Cifras, DatosFicha, ParCifra, VistaVariante } from './tipos';
 import type { ItemIndice } from '@/components/FichaIndice';
 
-export const textoPar = (p?: Par) => (p ? (p.m ? `${p.c} ${p.m}` : p.c) : '');
+export const textoPar = (p?: ParCifra) => (p ? (p.m ? `${p.c} ${p.m}` : p.c) : '');
 
 type ClaveFila = keyof Cifras | 'notas';
 /** Filas que puede tener «Comparar variantes», en el orden de la ficha. */

@@ -4,29 +4,41 @@ import { notFound } from 'next/navigation';
 import SiteNav from '@/components/SiteNav';
 import SiteFooter from '@/components/SiteFooter';
 import { Migas } from '@/components/Migas';
-import { ACCESORIOS, accById, slugGrupo } from '@/three/data/accesorios';
-import { armasCon, demo3d, genericosCon, TOTAL_3D } from '@/three/data/accesorios-compat';
+import Galeria from '@/components/Galeria';
+import { SistemaNotas } from '@/components/SistemaNotas';
+import { MoaPuntos } from '@/components/MoaPuntos';
+import { getCatalogo } from '@/catalogo/datos';
+import { terminoLite } from '@/catalogo/ficha';
+import { slugGrupo, textoAcc } from '@/catalogo/util';
+import { ENABLE_3D } from '@/config';
 
 type Props = { params: Promise<{ id: string }> };
 
-export const dynamicParams = false;
-export const generateStaticParams = () => ACCESORIOS.map(a => ({ id: a.id }));
+// Los accesorios nuevos creados desde el panel no existen en el build: se generan al primer acceso (y quedan en caché).
+export const dynamicParams = true;
+export const generateStaticParams = async () => (await getCatalogo()).accesorios.map(a => ({ id: a.id }));
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const a = accById((await params).id);
+  const a = (await getCatalogo()).accById((await params).id);
   if (!a) return {};
-  return { title: `${a.nombre}: ficha técnica`, description: `${a.nombre}: ${a.resumen} Datos técnicos, ventajas, límites y armas del catálogo en las que se monta.` };
+  return { title: `${a.nombre}: ficha técnica`, description: `${a.nombre} (${a.tecnico[0]}): ${a.resumen} Datos técnicos, ventajas, límites y armas del catálogo en las que se monta.` };
 }
 
 export default async function AccesorioPage({ params }: Props) {
-  const a = accById((await params).id);
+  const cat = await getCatalogo();
+  const a = cat.accById((await params).id);
   if (!a) notFound();
-  const i = ACCESORIOS.indexOf(a);
-  const prev = ACCESORIOS[i - 1], next = ACCESORIOS[i + 1];
-  const armas = armasCon(a);
-  const genericos = genericosCon(a);
-  const demo = demo3d(a);
+  const i = cat.accesorios.indexOf(a);
+  const prev = cat.accesorios[i - 1], next = cat.accesorios[i + 1];
+  const armas = cat.armasConAccesorio(a);
+  const totalConAcc = cat.armasConAccesorios.length;
+  // Enlace de prueba al constructor 3D (solo con el interruptor encendido): una plataforma donde encaja, mejor el HK416 A5
+  const plataformas = armas.flatMap(x => x.variants.flatMap(v => (v.platform ? [v.platform] : [])));
+  const plataforma = plataformas.includes('hk416_a5') ? 'hk416_a5' : plataformas[0];
+  const demo = plataforma && a.partes[0] ? { plataforma, pieza: a.partes[0] } : undefined;
   const ph = a.foto;
+  const terminos = cat.sistemasDe(textoAcc(a), 'accesorio');
+  const conMoa = a.grupo === 'Ópticas' && /\bMOA\b/.test(textoAcc(a));
 
   return (
     <>
@@ -36,22 +48,24 @@ export default async function AccesorioPage({ params }: Props) {
         <div className={`wsheet ${ph ? '' : 'nophoto'}`}>
           {ph && (
             <figure className="spfig wplate">
-              <img src={`/accesorios/${ph.file}`} width={1600} height={1000} alt={ph.alt} decoding="async" />
+              <div className="dx-frame">
+                <div className="wframe scene" style={{ '--ph': `url(${ph.url})` } as React.CSSProperties}><img src={ph.url} width={1600} height={1000} alt={ph.alt} decoding="async" fetchPriority="high" /></div>
+              </div>
               <figcaption>
-                {ph.alt}.{ph.author && ` ${ph.author}.`}
-                {ph.license && <> {ph.licenseUrl ? <a href={ph.licenseUrl} target="_blank" rel="noopener noreferrer">{ph.license}</a> : ph.license}.</>}
-                {ph.source && <> <a href={ph.source} target="_blank" rel="noopener noreferrer">Wikimedia Commons</a></>}
+                {ph.alt}.{ph.autor && ` ${ph.autor}.`}
+                {ph.licencia && <> {ph.licenciaUrl ? <a href={ph.licenciaUrl} target="_blank" rel="noopener noreferrer">{ph.licencia}</a> : ph.licencia}.</>}
+                {ph.fuenteUrl && <> <a href={ph.fuenteUrl} target="_blank" rel="noopener noreferrer">Wikimedia Commons</a></>}
               </figcaption>
             </figure>
           )}
           <div className="wbody">
             <div className="whead">
               <div>
-                <p className="crumbs wkind">{a.grupo}</p>
                 <h1>{a.nombre}</h1>
+                <p className="wtec"><span>En inglés</span> <span lang="en">{a.tecnico.join(' · ')}</span></p>
                 <p className="wikilead">{a.resumen}</p>
               </div>
-              {demo && <div className="wactions"><Link className="primary" href={`/montar/?m=${demo.plataforma}&p=${demo.pieza}`}>Probar en 3D</Link></div>}
+              {ENABLE_3D && demo && <div className="wactions"><Link className="primary" href={`/montar/?m=${demo.plataforma}&p=${demo.pieza}`}>Probar en 3D</Link></div>}
             </div>
 
             <div className="fkeys">{a.clave.map(([k, v]) => <div className="fkey" key={k}><span>{k}</span><b>{v}</b></div>)}</div>
@@ -61,6 +75,16 @@ export default async function AccesorioPage({ params }: Props) {
               <dl>{a.datos.map(([k, v]) => <div className="sr" key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
               <p className="src">Fuente: {a.fuente}. Valores típicos; varían según el fabricante y el modelo.</p>
             </div>
+
+            {terminos.length > 0 && (<>
+              <h2>Términos de esta ficha</h2>
+              <SistemaNotas items={terminos.map(terminoLite)} />
+            </>)}
+
+            {conMoa && (<>
+              <h2>El punto, a escala (MOA)</h2>
+              <MoaPuntos />
+            </>)}
 
             <h2>Cómo funciona</h2>
             <div className="wprose">{a.como.map((p, k) => <p key={k}>{p}</p>)}</div>
@@ -76,22 +100,22 @@ export default async function AccesorioPage({ params }: Props) {
               <div><h3>Límites</h3><ul className="wlist">{a.contras.map(t => <li key={t}>{t}</li>)}</ul></div>
             </div>
 
-            {a.ejemplos && (<>
-              <h2>Ejemplos reales</h2>
-              <div className="wprose"><p>{a.ejemplos}</p></div>
+            {a.modelos.length > 0 && (<>
+              <h2>Modelos reales</h2>
+              <ul className="wmodelos" lang="en">{a.modelos.map(m => { const [n, nota] = typeof m === 'string' ? [m, ''] : m; return <li key={n}><b>{n}</b>{nota && <span lang="es">{nota}</span>}</li>; })}</ul>
             </>)}
 
             <h2>En airsoft</h2>
             <div className="wprose"><p>{a.airsoft}</p></div>
 
             <h2>Se monta en</h2>
-            {armas.length === TOTAL_3D && <div className="wprose"><p>Todas las armas del catálogo con modelo 3D ({TOTAL_3D}){genericos.length > 0 && ' y estos cuerpos genéricos del constructor:'}{genericos.length === 0 && '.'}</p></div>}
-            {(armas.length !== TOTAL_3D || genericos.length > 0) && (
-              <ul className="wlist">
-                {armas.length !== TOTAL_3D && armas.map(m => <li key={m.id}><Link href={`/armas/${m.id}/`}>{m.name}</Link><span>{m.maker}</span></li>)}
-                {genericos.map(g => <li key={g.id}><Link href={`/montar/?m=${g.id}`}>{g.nombre}</Link><span>Cuerpo genérico del constructor 3D</span></li>)}
-              </ul>
-            )}
+            {armas.length === 0
+              ? <div className="wprose"><p>Todavía no hay armas del catálogo asociadas a este accesorio.</p></div>
+              : armas.length === totalConAcc
+                ? <div className="wprose"><p>Todas las armas del catálogo con piezas compatibles ({totalConAcc}).</p></div>
+                : <ul className="wlist">{armas.map(m => <li key={m.id}><Link href={`/armas/${m.id}/`}>{m.name}</Link><span>{m.maker}</span></li>)}</ul>}
+
+            <Galeria fotos={a.galeria} nombre={a.nombre} />
 
             <div className="wnav">
               {prev ? <Link className="ghost" href={`/accesorios/${prev.id}/`}>← {prev.nombre}</Link> : <span />}

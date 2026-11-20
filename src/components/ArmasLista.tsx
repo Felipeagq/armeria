@@ -1,8 +1,9 @@
 // Lista de armas (portada). Sin hooks ni 'use client': el servidor la usa como contenido inicial completo y el buscador
 // de cliente la reutiliza ya filtrada. `cmp` solo lo pasa el cliente (activa los botones de comparar).
 import Link from 'next/link';
-import type { ArmaCard } from '@/three/data/armas';
+import type { ArmaCard } from '@/catalogo/tipos';
 import { IconCheck, IconGun, IconPlus } from './icons';
+import { ENABLE_3D } from '@/config';
 
 export interface CmpProps { selected: string[]; max: number; toggle: (id: string) => void }
 
@@ -13,7 +14,7 @@ function Fila({ c, cmp }: { c: ArmaCard; cmp?: CmpProps }) {
     <li className="wi">
       <Link href={`/armas/${c.id}/`}>
         <span className="wi-thumb">{c.photo ? <img src={c.photo} alt="" width={160} height={100} loading="lazy" decoding="async" /> : <IconGun />}</span>
-        <span className="wi-name">{c.name}{c.has3d && <i className="wtag" title="Se puede montar en 3D">3D</i>}</span>
+        <span className="wi-name">{c.name}{ENABLE_3D && c.has3d && <i className="wtag" title="Se puede montar en 3D">3D</i>}</span>
         <span className="wi-maker">{c.maker}</span>
         {c.calibre && <span className="wi-spec">{c.calibre}</span>}
       </Link>
@@ -38,7 +39,7 @@ export function ArmasLista({ cards, groups, flat, cmp }: { cards: ArmaCard[]; gr
         const items = cards.filter(c => c.group === g); if (!items.length) return null;
         return (
           <section key={g} aria-label={g}>
-            <h2>{g}</h2>
+            <h2>{g}<span>{items.length}</span></h2>
             <ul className={cls}>{items.map(c => <Fila key={c.id} c={c} cmp={cmp} />)}</ul>
           </section>
         );

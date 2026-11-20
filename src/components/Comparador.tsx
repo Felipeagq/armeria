@@ -5,10 +5,11 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
-import type { ArmaComp } from '@/three/data/armas';
+import type { ArmaComp } from '@/catalogo/tipos';
 import { SPEC_LABELS } from '@/three/data/spec-labels';
 import type { Specs } from '@/three/types';
 import { IconClose, IconGun } from './icons';
+import { ENABLE_3D } from '@/config';
 
 const MAX = 3;
 interface Col { id: string; v: string }
@@ -52,7 +53,7 @@ export default function Comparador({ armas }: { armas: ArmaComp[] }) {
   });
   const filas = [
     ...SPEC_LABELS.map(([k, l]) => ({ k: String(k), l, vals: datos.map(d => d.s[k] ?? '') })),
-    { k: '3d', l: 'Constructor 3D', vals: datos.map(d => (d.vr.modelo3d ? 'Sí' : 'No')) },
+    ...(ENABLE_3D ? [{ k: '3d', l: 'Constructor 3D', vals: datos.map(d => (d.vr.modelo3d ? 'Sí' : 'No')) }] : []),
   ].filter(f => f.vals.some(Boolean))
    .filter(f => !dif || datos.length < 2 || f.vals.some(v => !same(v, f.vals[0])));
 

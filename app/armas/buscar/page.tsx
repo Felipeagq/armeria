@@ -9,7 +9,7 @@ import BotonIA from '@/components/BotonIA';
 import { buscar } from '@/server/cascada';
 import { generarFicha, iaDisponible, iaSlug, permitir } from '@/server/ia';
 import { getFicha, putFicha } from '@/server/store';
-import { refSpecs } from '@/three/data/armas';
+import { refSpecs } from '@/catalogo/util';
 import { IconGun, IconSearch } from '@/components/icons';
 
 export const dynamic = 'force-dynamic';

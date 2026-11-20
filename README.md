@@ -3,7 +3,7 @@
 Enciclopedia de armas reales y de sus réplicas de airsoft hecha con **Next.js (App Router) + TypeScript**, con un constructor 3D opcional (**three.js**).
 La **ficha** es la entidad principal: cada arma tiene datos del modelo real, de su réplica y enlaces a su munición. Las que además tienen geometría (12 modelos con variantes: HK416 A5/A7/A8, M4/AR-15, MK18, SIG516, L119A2, MCX Virtus, AK-74M, AK-12, Galil ACE, FN SCAR L/H, HK G36 C/K y CZ BREN 2) se pueden **montar en 3D** con accesorios, despiece animado, exportación a PNG e importación de modelos `.glb`. Una ficha sin 3D (p. ej. Glock 17) se consulta exactamente igual.
 
-Rutas: `/` índice con búsqueda, filtros (calibre, familia, país, 3D) y orden, todo en la URL (`?calibre=5,56×45&3d=1&orden=nombre`) · `/comparar/?a=hk416:a5,m4` comparador de 2–3 armas o variantes (`dif=1` muestra solo diferencias) · `/sistemas/` glosario (sistemas, cerrojos y términos de las réplicas de airsoft: AEG, AEP, GBB; cada ficha los explica en una línea desplegable) · `/armas/[id]/` ficha de un arma (`?v=<variante>` elige la variante activa) · `/accesorios/` y `/accesorios/[id]/` enciclopedia de accesorios (miras, bocachas, luces y láseres, empuñaduras, cargadores, culatas) · `/balas/` y `/balas/[id]/` munición · `/montar/` constructor 3D (`?m=<plataforma>` preselecciona el modelo y `&p=<pieza>` monta una pieza al llegar). `/api/busqueda/` es el índice estático del buscador global (Ctrl/Cmd + K o «/»), que se descarga al abrirlo. Una página 404 propia en español. Solo `/montar/` carga three.js en el navegador.
+Rutas: `/` índice con búsqueda, filtros (calibre, familia, país, 3D) y orden, todo en la URL (`?calibre=5,56×45&3d=1&orden=nombre`) · `/comparar/?a=hk416:a5,m4` comparador de 2–3 armas o variantes (`dif=1` muestra solo diferencias) · `/sistemas/` glosario (sistemas, cerrojos, términos de las réplicas de airsoft —AEG, AEP, GBB— y de miras y accesorios —MOA, Picatinny, M-LOK, STANAG—; cada ficha los explica en una línea desplegable) · `/armas/[id]/` ficha de un arma (`?v=<variante>` elige la variante activa) · `/accesorios/` y `/accesorios/[id]/` enciclopedia de accesorios (miras, bocachas, luces y láseres, empuñaduras, cargadores, culatas); cada ficha muestra su nombre técnico en inglés («flash hider») y modelos reales («Olight Osight R»), ambos buscables · `/balas/` y `/balas/[id]/` munición · `/montar/` constructor 3D (`?m=<plataforma>` preselecciona el modelo y `&p=<pieza>` monta una pieza al llegar). `/api/busqueda/` es el índice estático del buscador global (Ctrl/Cmd + K o «/»), que se descarga al abrirlo. Una página 404 propia en español. Solo `/montar/` carga three.js en el navegador.
 
 ## Requisitos
 
@@ -20,6 +20,75 @@ npm run typecheck    # tsc --noEmit (modo estricto)
 npm run build        # build de producción (.next/)
 npm start            # sirve el build en http://localhost:3010 (requiere npm run build)
 ```
+
+## Interruptor del 3D
+
+El constructor 3D está **apagado por omisión**. Con `NEXT_PUBLIC_ENABLE_3D` sin definir (o distinto de `true`): `/montar` responde 404, y desaparecen el enlace «Montar», el filtro y la etiqueta «3D», los botones «Montar en 3D» / «Probar en 3D» y la fila «Constructor 3D» del comparador. El código 3D (`src/three`, `src/components/App.tsx`, etc.) no se borra: para reactivarlo pon `NEXT_PUBLIC_ENABLE_3D=true` en `.env` y reinicia (`npm run dev`) o recompila (`npm run build`), porque la variable se lee al compilar. Todo el sitio de consulta lee la constante `ENABLE_3D` de `src/config.ts`.
+
+## Base de datos y contenido
+
+El contenido (armas y variantes, munición, accesorios, glosario, imágenes y sus relaciones) vive en PostgreSQL (`DATABASE`, esquema en `src/db/schema.ts`, migraciones en `drizzle/`). Las imágenes están en un bucket S3 **privado** (`S3_*`) y se sirven por la ruta `/img/<tipo>/<rol>/<archivo>` de la app (`app/img/[...ruta]/route.ts`, con caché larga); la BD guarda la clave de S3 y esa URL, o el enlace si la imagen es externa.
+
+```bash
+npm run db:generate   # nueva migración tras editar src/db/schema.ts
+npm run db:migrate    # aplica las migraciones a DATABASE
+npm run db:imagenes   # sube a S3 las imágenes locales (repetible: salta las que ya están)
+npm run db:seed       # siembra la BD con el contenido del código (no pisa lo editado ni lo archivado)
+npm run db:seed -- --force   # reescribe el contenido con lo que hay en el código (no desarchiva)
+npm run db:seed -- --dry     # solo cuenta lo que sembraría
+```
+
+Borrar es **archivar** (`archivado_en`): el ítem se oculta y se puede restaurar. `registro_cambios` guarda quién cambió qué y cuándo.
+
+### Cómo leen las páginas el contenido
+
+Las páginas públicas ya no importan los datos del código: leen la BD con `getCatalogo()` (`src/catalogo/datos.ts`), que devuelve las mismas formas de antes (`Arma`, `Cartucho`, `Accesorio`, `Termino`, `Foto`) y cachea la lectura completa con la etiqueta `catalogo` (caduca cada hora). Las páginas se generan en el build (hace falta `DATABASE` también al compilar: en Amplify, en las variables de entorno de la app) y se regeneran al invalidar la etiqueta: un cambio en el panel llama a `updateTag('catalogo')` (en una acción) o `revalidateTag('catalogo', { expire: 0 })` (en una ruta) y la siguiente visita ya ve el dato nuevo. Los ítems nuevos creados en la BD se generan al primer acceso (`dynamicParams = true`). Los archivados no se leen: desaparecen de listados, fichas, buscador y comparador.
+
+Los módulos de `src/three/data` (armas, munición, accesorios, glosario…) ya **no son la fuente de verdad**: solo alimentan el seed (`npm run db:seed`) y el constructor 3D, que sigue con sus datos estáticos. Los textos de las fichas se editan en la BD (panel admin, fase 5), no en esos archivos.
+
+## Panel de administración (`/admin`)
+
+Acceso con un único usuario definido en el entorno (nunca `NEXT_PUBLIC_`):
+
+| Variable | Qué es |
+|---|---|
+| `ADMIN_USER` | Nombre de usuario |
+| `ADMIN_PASSWORD` | Contraseña |
+| `SESSION_SECRET` | Secreto de firma de la sesión, mínimo 32 caracteres (`openssl rand -base64 48`) |
+
+Si falta alguna (o el secreto es corto) el acceso queda **cerrado**: no hay valores por defecto. En Amplify se definen en las variables de entorno de la app, como `DATABASE` y `S3_*`.
+
+- Solo `/admin` y las rutas de escritura (`/admin/api/*`) exigen sesión; el sitio de consulta sigue público y estático.
+- Sesión: JWT firmado (HS256, `jose`) en una cookie `httpOnly`, `sameSite=lax`, `secure` en producción y limitada a la ruta `/admin`. Caduca a las 8 h. Cambiar `ADMIN_PASSWORD` o `SESSION_SECRET` cierra las sesiones abiertas.
+- Defensa en capas: `proxy.ts` hace la comprobación optimista (lee la cookie y redirige al login); además cada página, Server Action y ruta de escritura llama a `exigirAdmin()` / `adminDeRequest()` (`src/server/auth.ts`), y las rutas de escritura comprueban también el `Origin`.
+- Comparación de credenciales en tiempo constante y freno de intentos fallidos (5 por IP y 40 globales cada 15 min; en memoria y por instancia, así que es un freno, no un cortafuegos). Tras el tope hay que esperar a que pase la ventana.
+### Qué se edita en el panel
+
+`/admin/armas`, `/admin/municion`, `/admin/accesorios` y `/admin/glosario`: listado con búsqueda, filtro por grupo y «Mostrar archivados»; crear; editar; archivar y restaurar. `/admin/registro` lista todos los cambios.
+
+- **Armas:** identidad, datos comunes y variantes (datos propios, plataforma 3D, munición y accesorios que admite). Quitar una variante la archiva.
+- **Munición y accesorios:** toda la ficha, más las armas relacionadas (se marcan por variante, desde cualquiera de los dos lados). La munición de airsoft no necesita relaciones.
+- **Glosario:** el término y su expresión de detección, con probador en vivo.
+- **Identificador:** es la dirección de la ficha; se propone a partir del nombre y no se puede cambiar después.
+- **Validación:** en el servidor con `zod` (`src/admin/esquemas.ts`), con mensajes en español. Las expresiones regulares deben compilar y no pueden tener cuantificadores anidados (riesgo de bloqueo).
+- **Archivar, no borrar:** el ítem deja de verse en el sitio y se restaura desde el mismo panel. `registro_cambios` guarda usuario, fecha y el antes y después de cada cambio (sin cambios reales no escribe nada).
+- **Publicación instantánea:** al guardar se invalida la etiqueta `catalogo` (`updateTag`) y el índice del buscador; la siguiente visita ya ve el dato. Si cambias la BD por fuera del panel (SQL, seed), el sitio se actualiza al caducar la caché (1 h).
+
+Código: `src/admin/` (esquemas, acceso a datos y registro) y `app/admin/(panel)/` (páginas, formularios y acciones). Cada acción de escritura vuelve a exigir sesión.
+
+- `/admin` y `/img` están excluidos en `robots.txt` y las respuestas del panel llevan `Cache-Control: no-store` y `X-Robots-Tag: noindex`.
+
+## Diseño visual
+
+Estilo **glassmorphism táctico**, el «expediente de campo»: suelo de mapa topográfico oscuro, placas de cristal ahumado y, como gesto firma, las esquinas de visor de la placa de espécimen (la foto del arma). Está documentado en `DESIGN.md` (tokens, tipografía, reglas) y en `PRODUCT.md` (producto y usuarios); `.impeccable/` guarda el contrato de dirección y las muestras de componentes.
+
+- **Dónde vive:** `app/globals.css` (tokens `:root`, base, controles, panel y constructor 3D) y `app/site.css` (todo el sitio público). El panel `/admin` hereda los mismos tokens.
+- **Color con significado:** naranja de señal `#ff6a13` = réplicas de airsoft y toda acción; arena coyote `#d3c398` = arma real.
+- **Tipografía:** Barlow Condensed (nombres, cifras, botones, marca) y Barlow (lectura), autoalojadas con `@fontsource`, sin peticiones externas.
+- **Fondo:** `public/bg/relieve.svg` (33 KB), curvas de nivel generadas por programa: `node scripts/generar-relieve.mjs`.
+- **Cristal y rendimiento:** el desenfoque (`backdrop-filter`) solo está donde algo flota (cabecera, barra de secciones, dock móvil, lectura de cifras, buscador). En móvil, las listas y placas de lectura usan un relleno más denso sin desenfoque. Con `prefers-reduced-transparency` (o sin `backdrop-filter`) todo pasa a fondo opaco.
+- **Móvil primero:** el menú es un dock de cristal fijo abajo con iconos dibujados (`src/components/icons.tsx`).
+- **Contraste:** el texto sobre cristal se midió contra los píxeles reales (2.942 textos, todos ≥ 4,5:1 salvo el indicador de desarrollo de Next, que solo existe en `npm run dev`).
 
 ## Arquitectura
 
@@ -51,6 +120,7 @@ src/
     data/armas.ts       Enciclopedia: fichas (derivadas de MODELS + fichas sin 3D), calibres y país normalizados; sin WebGL
     data/sistemas.ts    Glosario de sistemas de funcionamiento, cerrojos y disparo (texto corto + detalle + patrón que lo detecta en una ficha)
     data/accesorios.ts  Fichas de accesorios (40, una por TIPO de accesorio): datos, cómo funciona, ventajas/límites, airsoft y `partes` (ids de pieza 3D que cubre); sin three
+    data/accesorios-nombres.ts  Nombres técnicos (inglés/jerga) y modelos reales de cada ficha de accesorio, por id; se fusionan en `ACCESORIOS`
     data/ficha.ts       SOLO SERVIDOR: datos de la ficha de un arma por variante (cifras, energía en boca, munición, accesorios que encajan en su plataforma 3D)
     data/ficha-indice.ts  Secciones del índice y filas que difieren entre variantes (sin imports de servidor: lo usan página y cliente)
     data/busqueda.ts    SOLO SERVIDOR: índice del buscador global (armas, accesorios, cartuchos, glosario)

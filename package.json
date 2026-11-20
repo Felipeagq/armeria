@@ -8,27 +8,41 @@
     "build": "next build",
     "start": "next start -p 3010",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:seed": "tsx scripts/seed.ts",
+    "db:imagenes": "tsx scripts/subir-imagenes.ts"
   },
   "engines": {
     "node": ">=20.9.0"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.8.0",
+    "@aws-sdk/client-s3": "^3.1173.0",
     "@fontsource-variable/ibm-plex-sans": "^5.3.0",
+    "@fontsource/barlow": "^5.3.0",
+    "@fontsource/barlow-condensed": "^5.3.0",
+    "drizzle-orm": "^0.45.4",
+    "jose": "^6.2.18",
     "next": "^16.4.6",
+    "postgres": "^4.1.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "three": "^0.187.0",
+    "zod": "^4.6.7",
     "zustand": "^5.1.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.1",
     "@types/node": "^22.20.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@types/three": "^0.187.0",
+    "drizzle-kit": "^0.31.11",
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.4.6",
+    "tsx": "^4.23.15",
     "typescript": "5.9"
   }
 }

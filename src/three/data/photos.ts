@@ -65,6 +65,16 @@ export const PHOTOS: Record<string, Photo> = {
     license: "CC BY-SA 4.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0",
     source: "https://commons.wikimedia.org/wiki/File:FN_SCAR-L_noBG.png",
   },
+  cordova: {
+    file: 'cordova.png', kind: 'real', author: "Sultan-025",
+    license: "CC BY-SA 4.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0",
+    source: "https://commons.wikimedia.org/wiki/File:Galil_C%C3%B3rdova_13.png",
+  },
+  tavor: {
+    file: 'tavor.png', kind: 'real', author: "MathKnight",
+    license: "CC BY 3.0", licenseUrl: "https://creativecommons.org/licenses/by/3.0",
+    source: "https://commons.wikimedia.org/wiki/File:IWI-Tavor-TAR-21w1.jpg",
+  },
   bren2: {
     file: 'bren2.jpg', kind: 'real', author: "Land68",
     license: "CC0", licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/deed.en",

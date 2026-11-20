@@ -4,6 +4,7 @@ import Link from 'next/link';
 import type { Platform } from '@/three/types';
 import { ammoForCalibre } from '@/three/data/ammo';
 import { SistemaNotas } from './SistemaNotas';
+import { sistemasDe } from '@/three/data/sistemas'; // constructor 3D: usa los datos estáticos del código, no la BD
 import { specRowsOf } from '@/three/data/spec-labels';
 import { photoFor, photoUrl } from '@/three/data/photos';
 import { PLATFORMS } from '@/three/registry';
@@ -23,7 +24,7 @@ export function SpecRows({ P, skip = [], glosario = false }: { P: Platform; skip
   return (
     <dl>
       {specRows(P).filter(([k]) => !skip.includes(k)).map(([k, label]) => (
-        <div className="sr" key={k}><dt>{label}</dt><dd>{P.specs?.[k]}{k === 'calibre' && <AmmoLinks calibre={P.specs?.[k]} />}{glosario && (k === 'sistema' || k === 'airsoft') && <SistemaNotas texto={P.specs?.[k]} campo={k} />}</dd></div>
+        <div className="sr" key={k}><dt>{label}</dt><dd>{P.specs?.[k]}{k === 'calibre' && <AmmoLinks calibre={P.specs?.[k]} />}{glosario && (k === 'sistema' || k === 'airsoft') && <SistemaNotas items={sistemasDe(P.specs?.[k], k)} />}</dd></div>
       ))}
     </dl>
   );

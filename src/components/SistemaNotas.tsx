@@ -1,10 +1,10 @@
-// Explicación breve de los términos del glosario bajo el dato («Sistema / cerrojo» o «Réplica airsoft»).
+// Explicación breve de los términos del glosario bajo el dato («Sistema / cerrojo», «Réplica airsoft» o el texto de un accesorio).
 // Cada término es un desplegable nativo (<details>): sin hooks ni JS, sirve en servidor y en cliente y se maneja con teclado.
+// Los términos llegan ya calculados (catalogo.sistemasDe): este componente no lee datos.
 import Link from 'next/link';
-import { sistemasDe, type CampoGlosario } from '@/three/data/sistemas';
+import type { TerminoLite } from '@/catalogo/tipos';
 
-export function SistemaNotas({ texto, campo = 'sistema' }: { texto?: string; campo?: CampoGlosario }) {
-  const items = sistemasDe(texto, campo);
+export function SistemaNotas({ items }: { items: TerminoLite[] }) {
   if (!items.length) return null;
   return (
     <ul className="wglos">

@@ -1,13 +1,13 @@
 'use client';
 // Cuerpo de la ficha de un arma: una variante activa gobierna las cifras, la ficha técnica, la munición y los accesorios.
 // La variante elegida se guarda en la URL (?v=id): al compartir el enlace se ve la misma. Sin JS, se muestra la primera.
-import { useSyncExternalStore, type KeyboardEvent } from 'react';
+import { useSyncExternalStore, type KeyboardEvent, type ReactNode } from 'react';
 import Link from 'next/link';
 import FichaIndice from './FichaIndice';
 import { SistemaNotas } from './SistemaNotas';
-import type { DatosFicha, Par, VistaVariante } from '@/three/data/ficha';
-import { filasComparar, hayReplica, seccionesDe, textoPar, valorFila } from '@/three/data/ficha-indice';
-import { sistemasDe } from '@/three/data/sistemas';
+import type { DatosFicha, ParCifra as Par, VistaVariante } from '@/catalogo/tipos';
+import { filasComparar, hayReplica, seccionesDe, textoPar, valorFila } from '@/catalogo/ficha-indice';
+import { ENABLE_3D } from '@/config';
 
 const EVENTO = 'ficha-variante';
 const suscribir = (cb: () => void) => {
@@ -20,7 +20,7 @@ function Cifra({ p }: { p: Par }) {
   return p.txt ? <b className="txt">{p.c}</b> : <><b>{p.c}</b>{p.m && <small>{p.m}</small>}</>;
 }
 
-export default function FichaVariantes({ datos }: { datos: DatosFicha }) {
+export default function FichaVariantes({ datos, nombre, fabricante, placa }: { datos: DatosFicha; nombre: string; fabricante: string; /** Placa de espécimen (foto principal), ya renderizada en el servidor. */ placa?: ReactNode }) {
   const vs = datos.variantes;
   const pedida = useSyncExternalStore(suscribir, leerVariante, () => '');
   const v: VistaVariante = vs.find(x => x.id === pedida) ?? vs[0];
@@ -49,33 +49,40 @@ export default function FichaVariantes({ datos }: { datos: DatosFicha }) {
   const alcanceTxt = v.alcance?.txt ? v.alcance : undefined;
   const filas = filasComparar(vs);
   const secciones = seccionesDe(datos);
-  const terminos = datos.airsoft ? sistemasDe(datos.airsoft, 'airsoft') : [];
+  const terminos = datos.terminosAirsoft;
 
   return (
     <>
-      {varias ? (
-        <div className="fv-var">
-          <span id="fv-var-l">Variante</span>
-          <div className="fv-seg" role="radiogroup" aria-labelledby="fv-var-l" onKeyDown={teclas}>
-            {vs.map(x => (
-              <button key={x.id} type="button" role="radio" aria-checked={x === v} tabIndex={x === v ? 0 : -1} onClick={() => elegir(x.id)}>{x.nombre}</button>
-            ))}
+      <div className={`dx-hero${placa ? '' : ' nophoto'}`}>
+        {placa}
+        <div className="dx-readout">
+          <h1>{nombre}</h1>
+          <p className="dx-maker">{fabricante}</p>
+          {varias ? (
+            <div className="fv-var">
+              <span id="fv-var-l">Variante</span>
+              <div className="fv-seg" role="radiogroup" aria-labelledby="fv-var-l" onKeyDown={teclas}>
+                {vs.map(x => (
+                  <button key={x.id} type="button" role="radio" aria-checked={x === v} tabIndex={x === v ? 0 : -1} onClick={() => elegir(x.id)}>{x.nombre}</button>
+                ))}
+              </div>
+            </div>
+          ) : v.nombre !== 'Estándar' && <p className="fv-one">{v.nombre}</p>}
+
+          <div className="fv-keys">
+            {teselas.filter(t => t.p).map(t => {
+              const cuerpo = <><span className="l">{t.l}</span><span className="v"><Cifra p={t.p!} /></span></>;
+              return t.href
+                ? <Link key={t.l} className="fv-k link" href={t.href} title={`Ver la ficha de ${v.cartucho?.nombre}`}>{cuerpo}</Link>
+                : <div key={t.l} className="fv-k" title={t.title}>{cuerpo}</div>;
+            })}
+          </div>
+
+          <div className="fv-act">
+            {ENABLE_3D && v.plataforma && <Link className="primary" href={`/montar/?m=${v.plataforma}`}>{varias ? `Montar ${v.nombre} en 3D` : 'Montar en 3D'}</Link>}
+            <Link className="ghost" href={`/comparar/?a=${datos.id}`}>Comparar</Link>
           </div>
         </div>
-      ) : v.nombre !== 'Estándar' && <p className="fv-one">{v.nombre}</p>}
-
-      <div className="fv-keys">
-        {teselas.filter(t => t.p).map(t => {
-          const cuerpo = <><span className="l">{t.l}</span><span className="v"><Cifra p={t.p!} /></span></>;
-          return t.href
-            ? <Link key={t.l} className="fv-k link" href={t.href} title={`Ver la ficha de ${v.cartucho?.nombre}`}>{cuerpo}</Link>
-            : <div key={t.l} className="fv-k" title={t.title}>{cuerpo}</div>;
-        })}
-      </div>
-
-      <div className="fv-act">
-        {v.plataforma && <Link className="primary" href={`/montar/?m=${v.plataforma}`}>{varias ? `Montar ${v.nombre} en 3D` : 'Montar en 3D'}</Link>}
-        <Link className="ghost" href={`/comparar/?a=${datos.id}`}>Comparar</Link>
       </div>
 
       <FichaIndice variante="chips" items={secciones} />
@@ -90,7 +97,7 @@ export default function FichaVariantes({ datos }: { datos: DatosFicha }) {
               {v.velocidad && <div className="sr"><dt>Velocidad inicial</dt><dd>{textoPar(v.velocidad)}</dd></div>}
               {alcanceTxt && <div className="sr"><dt>Alcance eficaz</dt><dd>{alcanceTxt.c}</dd></div>}
               {v.cargador && <div className="sr"><dt>Cargador</dt><dd>{textoPar(v.cargador)}</dd></div>}
-              {v.sistema && <div className="sr"><dt>Sistema / cerrojo</dt><dd>{v.sistema}<SistemaNotas texto={v.sistema} /></dd></div>}
+              {v.sistema && <div className="sr"><dt>Sistema / cerrojo</dt><dd>{v.sistema}<SistemaNotas items={v.terminosSistema} /></dd></div>}
               {v.notas && <div className="sr"><dt>Notas</dt><dd>{v.notas}</dd></div>}
             </dl></div>
           </div>
@@ -137,14 +144,14 @@ export default function FichaVariantes({ datos }: { datos: DatosFicha }) {
                   {terminos.map(s => (
                     <div key={s.id} className="fv-sysi">
                       <b>{s.sigla ?? s.nombre}</b>{s.apodo && <span>{s.apodo}</span>}
-                      <details><summary>Cómo funciona</summary><p>{s.corto} <Link href={`/sistemas/#${s.id}`} aria-label={`Más sobre ${s.nombre}`}>Más ›</Link></p></details>
+                      <details><summary>Cómo funciona</summary><p>{s.corto} <Link href={`/sistemas/#${s.id}`} aria-label={`Más sobre ${s.nombre}`}>Más</Link></p></details>
                     </div>
                   ))}
                 </div>
               )}
             </div>
           )}
-          {v.plataforma && (
+          {ENABLE_3D && v.plataforma && (
             <div className="fv-build">
               <div className="fv-vp">
                 {datos.foto && (
@@ -177,7 +184,7 @@ export default function FichaVariantes({ datos }: { datos: DatosFicha }) {
                   </div>
                 ))}
               </div>
-              <p className="src">Los que se pueden montar en el constructor 3D{varias ? ' con la variante elegida' : ''}. Cada ficha reúne sus datos técnicos.</p>
+              <p className="src">{ENABLE_3D ? 'Los que se pueden montar en el constructor 3D' : 'Los que encajan en este arma'}{varias ? ' con la variante elegida' : ''}. Cada ficha reúne sus datos técnicos.</p>
             </div>
           )}
         </section>

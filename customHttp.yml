@@ -19,13 +19,15 @@ customHeaders:
       #   (sin servidor no hay nonce por petición).
       # - 'wasm-unsafe-eval': el decodificador Meshopt de modelos GLB usa WebAssembly.
       # - blob:/data: en img-src: miniaturas y exportación PNG se generan en el navegador.
-      # - upload/thumb.wikimedia.org en img-src: fotos de las fichas consultadas en Wikipedia (/armas/ext/).
+      # - https: en img-src: las imágenes de las fichas pueden ser enlaces externos que se añaden desde el panel (Wikimedia, fabricantes…).
+      #   Es el único origen abierto, y solo para imágenes (no ejecutan código). Las subidas a S3 se sirven desde 'self' (/img/…).
+      # - connect-src sigue cerrado: el panel sube los archivos al propio servidor (/admin/api/imagenes/), no directamente a S3.
       - key: Content-Security-Policy
         value: >-
           default-src 'self';
           script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval';
           style-src 'self' 'unsafe-inline';
-          img-src 'self' data: blob: https://upload.wikimedia.org https://thumb.wikimedia.org;
+          img-src 'self' data: blob: https:;
           font-src 'self';
           connect-src 'self' blob: data:;
           worker-src 'self' blob:;

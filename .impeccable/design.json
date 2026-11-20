@@ -1,0 +1,379 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-20T16:27:29.101Z",
+  "title": "Design System: Armería 3D",
+  "extensions": {
+    "colorMeta": {
+      "ground": {
+        "role": "neutral",
+        "displayName": "Suelo de mapa",
+        "canonical": "oklch(15.9% 0.007 179)",
+        "tonalRamp": [
+          "#090c0b",
+          "#212524",
+          "#3f4442",
+          "#5f6563",
+          "#828786",
+          "#a7acab",
+          "#cbcfce",
+          "#edefee"
+        ]
+      },
+      "bone": {
+        "role": "neutral",
+        "displayName": "Hueso",
+        "canonical": "oklch(94.4% 0.010 141)",
+        "tonalRamp": [
+          "#0a0c09",
+          "#222521",
+          "#40443f",
+          "#606560",
+          "#838882",
+          "#a8aca7",
+          "#cccfcb",
+          "#edefed"
+        ]
+      },
+      "sage": {
+        "role": "neutral",
+        "displayName": "Salvia",
+        "canonical": "oklch(79.0% 0.017 151)",
+        "tonalRamp": [
+          "#080d09",
+          "#1e2620",
+          "#3c453e",
+          "#5c665e",
+          "#7f8981",
+          "#a4aea5",
+          "#c9d0ca",
+          "#ecefed"
+        ]
+      },
+      "sage-dim": {
+        "role": "neutral",
+        "displayName": "Salvia apagada",
+        "canonical": "oklch(71.5% 0.020 153)",
+        "tonalRamp": [
+          "#070d09",
+          "#1d271f",
+          "#3a463d",
+          "#5b675e",
+          "#7d8a80",
+          "#a2afa5",
+          "#c8d0ca",
+          "#ebf0ec"
+        ]
+      },
+      "glass-tint": {
+        "role": "neutral",
+        "displayName": "Tinte de cristal",
+        "canonical": "oklch(88.8% 0.031 145)",
+        "tonalRamp": [
+          "#060d06",
+          "#1b281b",
+          "#384738",
+          "#586859",
+          "#7b8b7b",
+          "#a0b0a0",
+          "#c6d1c6",
+          "#ebf0eb"
+        ]
+      },
+      "olive-glow": {
+        "role": "neutral",
+        "displayName": "Luz verde oliva",
+        "canonical": "oklch(58.4% 0.078 134)",
+        "tonalRamp": [
+          "#030f00",
+          "#132b00",
+          "#304b1e",
+          "#506d3e",
+          "#729160",
+          "#97b686",
+          "#c0d6b5",
+          "#e8f2e3"
+        ]
+      },
+      "coyote": {
+        "role": "secondary",
+        "displayName": "Arena coyote",
+        "canonical": "oklch(82.0% 0.060 90)",
+        "tonalRamp": [
+          "#110a00",
+          "#2f2200",
+          "#4f4119",
+          "#70623a",
+          "#94855c",
+          "#b9aa81",
+          "#d7cdb2",
+          "#f3eee1"
+        ]
+      },
+      "signal-orange": {
+        "role": "primary",
+        "displayName": "Naranja de señal",
+        "canonical": "oklch(70.1% 0.200 44)",
+        "tonalRamp": [
+          "#2e0000",
+          "#620000",
+          "#8d0000",
+          "#b72000",
+          "#e24f00",
+          "#ff7a33",
+          "#ffb288",
+          "#ffe3cf"
+        ]
+      },
+      "signal-ink": {
+        "role": "primary",
+        "displayName": "Tinta de señal",
+        "canonical": "oklch(17.0% 0.030 60)",
+        "tonalRamp": [
+          "#110904",
+          "#2f2116",
+          "#4f3f32",
+          "#715f52",
+          "#948274",
+          "#b9a799",
+          "#d8cbc1",
+          "#f3ede9"
+        ]
+      },
+      "specimen-plate": {
+        "role": "neutral",
+        "displayName": "Placa de espécimen",
+        "canonical": "oklch(87.4% 0.004 237)",
+        "tonalRamp": [
+          "#0a0b0c",
+          "#222426",
+          "#404344",
+          "#616465",
+          "#848788",
+          "#a8abad",
+          "#cccecf",
+          "#eeeeef"
+        ]
+      },
+      "alert": {
+        "role": "neutral",
+        "displayName": "Alerta",
+        "canonical": "oklch(79.3% 0.120 29)",
+        "tonalRamp": [
+          "#230000",
+          "#4e0000",
+          "#752019",
+          "#9c443a",
+          "#c4685c",
+          "#ea8e81",
+          "#fcbbb1",
+          "#ffe6e1"
+        ]
+      },
+      "confirm": {
+        "role": "neutral",
+        "displayName": "Confirmación",
+        "canonical": "oklch(81.6% 0.097 145)",
+        "tonalRamp": [
+          "#001100",
+          "#002f00",
+          "#194f1e",
+          "#3c723f",
+          "#5f9661",
+          "#85bb86",
+          "#b5d9b5",
+          "#e3f4e3"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Título de página y nombre del arma."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Zonas y secciones."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Encabezado de cada placa."
+      },
+      "figure": {
+        "displayName": "Cifra",
+        "purpose": "Las seis cifras clave, en cifras tabulares."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Prosa de lectura, máximo 66 caracteres por línea."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Etiquetas de datos."
+      },
+      "button": {
+        "displayName": "Botón",
+        "purpose": "Botones y chips."
+      },
+      "wordmark": {
+        "displayName": "Marca",
+        "purpose": "Solo «ARMERÍA 3D»; único uso de mayúsculas."
+      }
+    },
+    "shadows": [
+      {
+        "name": "glass-edge",
+        "value": "inset 0 1px 0 rgba(255,255,255,.2), inset 0 0 0 1px rgba(255,255,255,.025)",
+        "purpose": "Brillo superior de toda placa de cristal; el sistema no usa sombras exteriores."
+      }
+    ],
+    "motion": [
+      {
+        "name": "fijar",
+        "value": ".6s cubic-bezier(.16,1,.3,1)",
+        "purpose": "Única entrada: las esquinas de visor se fijan sobre la placa de espécimen (escala 1,04 → 1)."
+      },
+      {
+        "name": "estado",
+        "value": ".15s ease",
+        "purpose": "Hover y foco de controles."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "móvil",
+        "value": "640px"
+      },
+      {
+        "name": "tableta",
+        "value": "900px"
+      },
+      {
+        "name": "ficha-dividida",
+        "value": "961px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón principal",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Acción principal: naranja de señal, tinta oscura, rotulación condensada.",
+      "html": "<button class=\"ds-btn\">Comparar</button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:7px 18px;border:0;border-radius:3px;background:var(--accent);color:var(--accent-ink);font:600 17px var(--display);letter-spacing:.015em;cursor:pointer;transition:filter .15s}.ds-btn:hover{filter:brightness(1.1)}.ds-btn:active{filter:brightness(.94)}.ds-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}"
+    },
+    {
+      "name": "Botón de cristal",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Acción secundaria: cristal con filo fino; en hover, filo de arena.",
+      "html": "<button class=\"ds-ghost\">Ver en el sitio</button>",
+      "css": ".ds-ghost{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:7px 16px;border:1px solid rgba(206,224,206,.24);border-radius:3px;background:rgba(206,224,206,.07);color:var(--text);font:600 16px var(--display);letter-spacing:.015em;cursor:pointer;transition:border-color .15s,background-color .15s}.ds-ghost:hover{border-color:var(--sand);background:rgba(206,224,206,.12)}.ds-ghost:focus-visible{outline:2px solid var(--accent);outline-offset:2px}"
+    },
+    {
+      "name": "Chip de sección",
+      "kind": "chip",
+      "refersTo": "chip-section",
+      "description": "Barra de secciones de la ficha: la sección en lectura se invierte a hueso.",
+      "html": "<nav class=\"ds-bar\"><a class=\"ds-chip\" aria-current=\"location\" href=\"#\">Ficha técnica</a><a class=\"ds-chip\" href=\"#\">Munición</a><a class=\"ds-chip\" href=\"#\">Accesorios</a></nav>",
+      "css": ".ds-bar{display:flex;gap:6px;padding:8px 10px;border:1px solid rgba(206,224,206,.13);border-radius:6px;background:rgba(10,14,13,.78);backdrop-filter:blur(16px) saturate(1.3)}.ds-chip{display:inline-flex;align-items:center;min-height:38px;padding:6px 15px;border-radius:3px;color:var(--muted);font:600 17px var(--display);letter-spacing:.015em;text-decoration:none}.ds-chip:hover{color:var(--text);box-shadow:inset 0 0 0 1px rgba(206,224,206,.24)}.ds-chip[aria-current]{background:var(--text);color:var(--bg)}"
+    },
+    {
+      "name": "Campo de búsqueda",
+      "kind": "input",
+      "description": "Cristal humo con filo fino; el foco es un contorno naranja.",
+      "html": "<label class=\"ds-search\"><svg viewBox=\"0 0 24 24\" width=\"17\" height=\"17\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-3.5-3.5\"/></svg><input type=\"search\" placeholder=\"Buscar arma, fabricante o calibre…\"></label>",
+      "css": ".ds-search{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border:1px solid rgba(206,224,206,.24);border-radius:6px;background:rgba(9,13,12,.88);color:var(--dim)}.ds-search:focus-within{outline:2px solid var(--accent);border-color:transparent}.ds-search input{flex:1;min-width:0;border:0;outline:0;background:none;color:var(--text);font:inherit;caret-color:var(--accent)}.ds-search input::placeholder{color:var(--dim)}"
+    },
+    {
+      "name": "Placa de cristal",
+      "kind": "card",
+      "refersTo": "plate",
+      "description": "Contenedor de cada bloque de datos: degradado translúcido, filo de 1 px y brillo superior; sin sombra exterior.",
+      "html": "<section class=\"ds-plate\"><h3>Ficha técnica</h3><dl><div><dt>Cargador</dt><dd>STANAG 30 (caja recta curva)</dd></div><div><dt>Sistema</dt><dd>Impulsión directa de gases</dd></div></dl></section>",
+      "css": ".ds-plate{padding:20px 22px;border:1px solid rgba(206,224,206,.13);border-radius:6px;background:linear-gradient(150deg,rgba(206,224,206,.14),rgba(206,224,206,.05) 55%,rgba(206,224,206,.075));box-shadow:inset 0 1px 0 rgba(255,255,255,.2),inset 0 0 0 1px rgba(255,255,255,.025);color:var(--text)}.ds-plate h3{margin:0 0 12px;font:600 23px/1.15 var(--display);letter-spacing:.01em}.ds-plate dl{margin:0}.ds-plate dl div{display:grid;grid-template-columns:130px 1fr;gap:6px 20px;padding:11px 0;border-top:1px solid rgba(206,224,206,.13)}.ds-plate dl div:first-child{border-top:0;padding-top:0}.ds-plate dt{color:var(--muted)}.ds-plate dd{margin:0}"
+    },
+    {
+      "name": "Marco de espécimen",
+      "kind": "custom",
+      "refersTo": "specimen-frame",
+      "description": "Firma del sistema: foto sobre placa clara con esquinas de visor (arena = arma real, naranja = réplica) y etiqueta de cristal.",
+      "html": "<div class=\"ds-frame\"><span class=\"ds-tag\">Arma real</span><div class=\"ds-photo\"></div></div>",
+      "css": ".ds-frame{position:relative;padding:10px;border:1px solid rgba(206,224,206,.13);border-radius:6px;background:linear-gradient(150deg,rgba(206,224,206,.14),rgba(206,224,206,.05));--b:var(--sand);--l:20px;--t:2px}.ds-frame::after{content:\"\";position:absolute;inset:-1px;pointer-events:none;background:linear-gradient(var(--b),var(--b)) top left/var(--l) var(--t) no-repeat,linear-gradient(var(--b),var(--b)) top left/var(--t) var(--l) no-repeat,linear-gradient(var(--b),var(--b)) top right/var(--l) var(--t) no-repeat,linear-gradient(var(--b),var(--b)) top right/var(--t) var(--l) no-repeat,linear-gradient(var(--b),var(--b)) bottom left/var(--l) var(--t) no-repeat,linear-gradient(var(--b),var(--b)) bottom left/var(--t) var(--l) no-repeat,linear-gradient(var(--b),var(--b)) bottom right/var(--l) var(--t) no-repeat,linear-gradient(var(--b),var(--b)) bottom right/var(--t) var(--l) no-repeat}.ds-photo{height:180px;border-radius:3px;background:var(--plate)}.ds-tag{position:absolute;left:20px;top:20px;z-index:1;padding:4px 10px;border:1px solid rgba(206,224,206,.24);border-radius:3px;background:rgba(10,14,13,.8);color:var(--sand);font:600 15px var(--display);letter-spacing:.03em}"
+    },
+    {
+      "name": "Fila del índice",
+      "kind": "card",
+      "description": "Una arma por fila: miniatura sobre placa clara, nombre condensado, fabricante y calibre; en hover, filo de arena.",
+      "html": "<a class=\"ds-row\" href=\"#\"><span class=\"ds-th\"></span><b>HK416</b><span class=\"ds-mk\">Heckler &amp; Koch · Alemania</span><span class=\"ds-sp\">5,56×45 mm NATO</span></a>",
+      "css": ".ds-row{display:grid;grid-template-columns:92px 1fr auto;grid-template-rows:auto auto;column-gap:14px;align-items:center;padding:8px 14px 8px 8px;border:1px solid rgba(206,224,206,.13);border-radius:6px;background:linear-gradient(150deg,rgba(206,224,206,.14),rgba(206,224,206,.05));color:var(--text);text-decoration:none;transition:border-color .15s}.ds-row:hover{border-color:rgba(211,195,152,.5)}.ds-th{grid-row:1/3;width:92px;height:62px;border-radius:3px;background:var(--plate);box-shadow:inset 0 0 0 1px rgba(0,0,0,.28)}.ds-row b{align-self:end;font:600 23px/1.1 var(--display)}.ds-mk{color:var(--muted);font-size:14.5px}.ds-sp{grid-column:3;grid-row:1/3;color:var(--muted);font-size:13.5px}"
+    },
+    {
+      "name": "Cifra clave",
+      "kind": "custom",
+      "description": "Celda de la lectura de cifras: etiqueta gris, cifra condensada tabular y matiz.",
+      "html": "<div class=\"ds-k\"><span>Calibre</span><b>5,56×45 mm</b><small>NATO</small></div>",
+      "css": ".ds-k{padding:13px 22px 12px;border-bottom:1px solid rgba(206,224,206,.13);color:var(--text)}.ds-k span{display:block;font-size:14px;color:var(--muted)}.ds-k b{display:block;margin-top:3px;font:600 33px/1.02 var(--display);letter-spacing:.005em;font-variant-numeric:tabular-nums}.ds-k small{display:block;margin-top:3px;font-size:13px;color:var(--muted)}"
+    },
+    {
+      "name": "Dock de navegación",
+      "kind": "nav",
+      "description": "Menú móvil: cinco secciones con icono dibujado y etiqueta; la actual lleva una línea naranja superior.",
+      "html": "<nav class=\"ds-dock\"><a aria-current=\"page\" href=\"#\"><svg viewBox=\"0 0 24 24\" width=\"23\" height=\"23\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linejoin=\"round\"><path d=\"M2.5 10h11.5l1.6-2H21v3.6h-3.4l-1.4 2.2H14L12.8 19H9.2l1.2-5.2H2.5z\"/></svg>Armas</a><a href=\"#\"><svg viewBox=\"0 0 24 24\" width=\"23\" height=\"23\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\"><rect x=\"3.5\" y=\"4.5\" width=\"7\" height=\"15\" rx=\"1\"/><rect x=\"13.5\" y=\"4.5\" width=\"7\" height=\"15\" rx=\"1\"/></svg>Comparar</a></nav>",
+      "css": ".ds-dock{display:grid;grid-template-columns:repeat(2,1fr);border-top:1px solid rgba(206,224,206,.24);background:rgba(8,12,11,.86);backdrop-filter:blur(20px) saturate(1.4)}.ds-dock a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:60px;color:var(--muted);font:600 13.5px var(--display);letter-spacing:.03em;text-decoration:none;box-shadow:inset 0 2px 0 transparent}.ds-dock a[aria-current]{color:var(--text);box-shadow:inset 0 2px 0 var(--accent)}.ds-dock a[aria-current] svg{color:var(--accent)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "El expediente de campo",
+    "overview": "Un mapa topográfico oscuro hace de suelo y, encima, placas de cristal ahumado llevan los datos. Cada arma, cartucho o accesorio es un expediente: una placa de espécimen enmarcada por esquinas de visor y, al lado, una lectura de cifras. Todo lo demás se mantiene callado para que el dato se lea de un vistazo, con una sola mano, en el móvil.",
+    "keyCharacteristics": [
+      "Suelo oscuro con curvas de nivel generadas por programa y tres luces suaves detrás del cristal.",
+      "Cristal ahumado: relleno hueso translúcido, filo de 1 px y brillo superior, sin sombras exteriores.",
+      "Arena coyote para el arma real; naranja de señal para réplicas de airsoft y toda acción.",
+      "Tipografía condensada de rotulación para nombres y cifras; sans humanista para leer.",
+      "Un solo gesto firma: las esquinas de visor de la placa de espécimen.",
+      "Móvil primero: el menú es un dock de cristal con iconos bajo el pulgar."
+    ],
+    "rules": [
+      {
+        "name": "The Signal Rule",
+        "body": "El naranja solo significa réplica de airsoft o algo que se pulsa. La arena solo significa arma real. Ningún otro uso.",
+        "section": "colors"
+      },
+      {
+        "name": "The Contrast On Glass Rule",
+        "body": "Todo texto sobre cristal debe pasar 4,5:1 (3:1 el grande) medido contra el píxel más claro tras él; los secundarios pequeños usan Salvia, nunca la apagada.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Caps Rule",
+        "body": "Las mayúsculas se reservan a la marca. Los nombres de armas se muestran tal cual están escritos.",
+        "section": "typography"
+      },
+      {
+        "name": "The Glass Has A Reason Rule",
+        "body": "El desenfoque solo existe donde algo flota o pasa por debajo. Una lista larga o una columna de lectura no lo lleva en móvil.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Reduced Transparency Rule",
+        "body": "Con prefers-reduced-transparency (o sin backdrop-filter) todo el cristal pasa a un fondo opaco #101814; el diseño sigue completo y legible.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do reservar el naranja (#ff6a13) para réplicas y acciones, y la arena (#d3c398) para lo real.",
+      "Do medir el contraste del texto sobre el cristal real, no sobre el fondo teórico.",
+      "Do dibujar los iconos con el mismo trazo de 1,75 px en una rejilla de 24 px.",
+      "Do dar a cada placa un filo de 1 px y un brillo superior, y nada más para elevarla.",
+      "Do mantener la columna de lectura sin textura ni efectos detrás del texto."
+    ],
+    "donts": [
+      "Don't añadir sombras exteriores, gradientes en el texto, rayas de color de más de 1 px en un lado ni etiquetas sobre los títulos.",
+      "Don't poner marcas de escala o de regla sobre las fotos: fingirían una medida que no existe.",
+      "Don't usar emblemas, insignias, calaveras ni camuflaje como adorno: lo táctico es la lengua técnica de la ficha.",
+      "Don't anidar placas dentro de placas ni repetir el desenfoque en listas largas de móvil.",
+      "Don't usar glifos Unicode como iconos."
+    ]
+  }
+}

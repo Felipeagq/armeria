@@ -5,11 +5,13 @@ import SiteNav from '@/components/SiteNav';
 import SiteFooter from '@/components/SiteFooter';
 import { Migas } from '@/components/Migas';
 import { SistemaNotas } from '@/components/SistemaNotas';
-import { ammoForCalibre } from '@/three/data/ammo';
-import { specRowsOf } from '@/three/data/armas';
+import { getCatalogo } from '@/catalogo/datos';
+import { terminoLite } from '@/catalogo/ficha';
+import { specRowsOf } from '@/three/data/spec-labels';
 import { getFicha, putFicha, type FichaExterna } from '@/server/store';
 import { fichaDesdeWikipedia, parseWikiSlug } from '@/server/wikipedia';
 import type { Specs } from '@/three/types';
+import { ENABLE_3D } from '@/config';
 
 export const dynamic = 'force-dynamic';
 type Props = { params: Promise<{ slug: string }> };
@@ -37,7 +39,8 @@ const GEN_LABEL = { pistol: 'pistola', rifle: 'carabina', smg: 'subfusil' } as c
 export default async function FichaExternaPage({ params }: Props) {
   const f = await resolver((await params).slug);
   if (!f) notFound();
-  const ammo = ammoForCalibre(f.specs.calibre);
+  const cat = await getCatalogo();
+  const ammo = cat.ammoForCalibre(f.specs.calibre);
   const keys = KEY_FACTS.filter(([k]) => f.specs[k]);
   const ia = f.origen === 'ia';
   return (
@@ -62,7 +65,7 @@ export default async function FichaExternaPage({ params }: Props) {
                 <h1>{f.name}</h1>
                 <p className="wikilead">{[f.maker, f.tipo].filter(Boolean).join(', ')}</p>
               </div>
-              <Link className="primary" href={`/montar/?m=${f.generico}&name=${encodeURIComponent(f.name)}`} title="Abre el constructor con un cuerpo genérico; la silueta no es la de este modelo">Montar con cuerpo de {GEN_LABEL[f.generico]}</Link>
+              {ENABLE_3D && <Link className="primary" href={`/montar/?m=${f.generico}&name=${encodeURIComponent(f.name)}`} title="Abre el constructor con un cuerpo genérico; la silueta no es la de este modelo">Montar con cuerpo de {GEN_LABEL[f.generico]}</Link>}
             </div>
             <p className={`wnote ${ia ? 'warn' : ''}`} role={ia ? 'note' : undefined}>
               <i className={`wbadge ${f.origen}`}>{ia ? 'Generado con IA, sin verificar' : 'Wikipedia'}</i>
@@ -88,7 +91,7 @@ export default async function FichaExternaPage({ params }: Props) {
 
             <h2>Datos</h2>
             <div className="fspecs">
-              <dl>{specRowsOf(f.specs).filter(([k]) => !keys.some(([key]) => key === k)).map(([k, label]) => <div className="sr" key={k}><dt>{label}</dt><dd>{f.specs[k]}{(k === 'sistema' || k === 'airsoft') && <SistemaNotas texto={f.specs[k]} campo={k} />}</dd></div>)}</dl>
+              <dl>{specRowsOf(f.specs).filter(([k]) => !keys.some(([key]) => key === k)).map(([k, label]) => <div className="sr" key={k}><dt>{label}</dt><dd>{f.specs[k]}{(k === 'sistema' || k === 'airsoft') && <SistemaNotas items={cat.sistemasDe(f.specs[k], k).map(terminoLite)} />}</dd></div>)}</dl>
               {!specRowsOf(f.specs).length && <p className="muted">La fuente no aporta datos técnicos estructurados.</p>}
               <p className="src">Fuente: {f.specs.fuente}. Consultado el {new Date(f.fetchedAt).toLocaleDateString('es-ES')}. Los valores varían según configuración y munición.</p>
             </div>

@@ -4,6 +4,7 @@
 // Módulo ligero (sin three ni `window`): lo usan páginas de servidor y el constructor. La compatibilidad con armas está en accesorios-compat.ts.
 
 import { FOTOS } from './accesorios-fotos';
+import { NOMBRES_ACC } from './accesorios-nombres';
 
 export type GrupoAcc = 'Ópticas' | 'Bocachas' | 'Luces y láseres' | 'Empuñaduras y apoyos' | 'Cargadores' | 'Culatas';
 export const GRUPOS_ACC: GrupoAcc[] = ['Ópticas', 'Bocachas', 'Luces y láseres', 'Empuñaduras y apoyos', 'Cargadores', 'Culatas'];
@@ -20,12 +21,20 @@ export interface AccFoto {
   source?: string;
 }
 
+/** Modelo real de un accesorio: solo el nombre, o [nombre, nota breve]. */
+export type Modelo = string | [nombre: string, nota: string];
+export const nombreModelo = (m: Modelo) => (typeof m === 'string' ? m : m[0]);
+
 export interface Accesorio {
   id: string;
   nombre: string;
   grupo: GrupoAcc;
   /** Una frase: índice y entradilla. */
   resumen: string;
+  /** Nombres técnicos o en inglés con los que se conoce (p. ej. «Flash hider»); salen bajo el título y se buscan en el buscador. */
+  tecnico: string[];
+  /** Modelos reales (p. ej. «Olight Osight R»): para reconocer la pieza en una tienda. Con nota opcional: [modelo, nota]. */
+  modelos: Modelo[];
   /** Tres cifras que se destacan arriba. */
   clave: [label: string, value: string][];
   /** Ficha técnica. */
@@ -36,7 +45,6 @@ export interface Accesorio {
   variantes?: [name: string, text: string][];
   pros: string[];
   contras: string[];
-  ejemplos?: string;
   /** Qué cambia en las réplicas de airsoft. */
   airsoft: string;
   /** Ids de las piezas del constructor 3D que representa esta ficha. */
@@ -45,7 +53,7 @@ export interface Accesorio {
   foto?: AccFoto;
 }
 
-const FICHAS: Accesorio[] = [
+const FICHAS: Omit<Accesorio, 'tecnico' | 'modelos' | 'foto'>[] = [
   /* ═════════════ Ópticas ═════════════ */
   { id: 'red-dot-abierto', nombre: 'Red dot abierto', grupo: 'Ópticas', partes: ['opt_rds'],
     resumen: 'Mira sin aumento que proyecta un punto luminoso sobre un cristal abierto: ligera, compacta y rápida con los dos ojos abiertos.',
@@ -66,7 +74,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Ligera, compacta y de perfil bajo', 'Adquisición de blanco muy rápida con los dos ojos abiertos', 'Paralaje muy reducido: el punto apenas se mueve si cambia la posición del ojo'],
     contras: ['Sin aumento: no sirve para distancias largas', 'Lente y emisor quedan al aire; la lluvia, el barro o la suciedad pueden taparlos', 'Con astigmatismo, el punto puede verse deformado'],
-    ejemplos: 'Holosun 507C y 510C, Trijicon RMR, Leupold DeltaPoint Pro, Vortex Crossfire.',
     airsoft: 'Es la óptica más usada: a las distancias de juego (≈ 20–60 m) no hace falta aumento y su poco peso no desequilibra la réplica. Abundan las copias de los modelos reales; las baratas suelen perder el cero con los golpes.',
     fuente: 'Wikipedia (Reflector sight, Red dot sight)' },
 
@@ -89,7 +96,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Muy robusta y resistente al agua y al polvo', 'Autonomía de años con una sola pila', 'La lente queda protegida dentro del tubo'],
     contras: ['Más pesada y voluminosa que un reflex abierto', 'Campo de visión más estrecho que el de una ventana abierta', 'Es más cara'],
-    ejemplos: 'Aimpoint CompM4 (M68 CCO), Aimpoint Micro T-2, Aimpoint PRO.',
     airsoft: 'Casi todas las réplicas copian a Aimpoint. Suelen pesar 100–200 g y resisten mejor que los reflex baratos; algunas llevan la tapa abatible de plástico como el original. Conviene que el brillo tenga varios pasos.',
     fuente: 'Wikipedia (Aimpoint CompM4, Red dot sight)' },
 
@@ -112,7 +118,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Anillo y punto: muy rápida a corta distancia', 'Ventana ancha y gran campo de visión', 'La retícula suele verse aunque el cristal esté parcialmente dañado'],
     contras: ['Más grande y pesada que un red dot', 'Menor autonomía (el láser gasta más que un LED)', 'Algunos modelos antiguos mostraron deriva del punto de impacto con temperaturas extremas'],
-    ejemplos: 'EOTech 512, 551 y 552, EOTech EXPS3, Vortex Razor AMG UH-1.',
     airsoft: 'Las «holo» de airsoft copian la forma del EOTech, pero no son holográficas: son un reflex con una retícula de anillo y punto. Pesan menos que el original y su punto se ajusta como el de cualquier red dot.',
     fuente: 'Wikipedia (EOTech, Holographic weapon sight)' },
 
@@ -135,7 +140,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Versátil: cerca como un red dot, lejos con aumento', 'Retícula con marcas de distancia', 'Permite identificar blancos a distancia'],
     contras: ['Pesada y larga', 'A 1× el campo de visión es menor que el de un red dot', 'Hay que respetar el relieve ocular para ver la imagen completa', 'Es más cara'],
-    ejemplos: 'Trijicon AccuPoint 1–4×24, Vortex Strike Eagle 1–6×24, Elcan SpecterDR 1×/4×.',
     airsoft: 'Las hay de 1–4× y de 3–9×. A las distancias de juego (hasta ≈ 60 m) el aumento sirve poco, pero es útil en réplicas de tirador designado (DMR) y de francotirador. Cuidado con el peso: puede pasar de 500 g.',
     fuente: 'Wikipedia (Telescopic sight)' },
 
@@ -163,7 +167,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Casi no añade peso ni longitud', 'Menos destello y mejor visión nocturna del tirador', 'Es la base de muchos supresores y adaptadores'],
     contras: ['No reduce el retroceso de forma apreciable', 'No oculta el estruendo ni el humo', 'Algunas formas se enganchan en cuerdas o vegetación'],
-    ejemplos: 'Jaula A2 del M16A2 y del M4; SureFire WarComp (apagallamas con función de freno).',
     airsoft: 'En réplicas es casi siempre estético. La rosca de las réplicas es de 14 mm a izquierdas (CCW), no la 1/2×28 real, así que un apagallamas real no entra sin adaptador.',
     fuente: 'Wikipedia (Flash suppressor, M16 rifle)' },
 
@@ -188,7 +191,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Menos subida del cañón: disparos repetidos más precisos', 'Se nota más cuanto más potente es el cartucho'],
     contras: ['Más estruendo y onda de choque hacia los lados', 'Levanta polvo si se dispara tumbado', 'No suele admitir un supresor encima'],
-    ejemplos: 'Freno de dos cámaras del AK-74.',
     airsoft: 'Como el apagallamas, es estético: no reduce el retroceso de una réplica AEG ni GBB. En las réplicas la rosca es de 14 mm a izquierdas (CCW).',
     fuente: 'Wikipedia (Muzzle brake, AK-74)' },
 
@@ -213,7 +215,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Reduce el estruendo hasta ≈ 30 dB', 'Reduce la llamarada', 'Mayor comodidad para el tirador y quienes están cerca'],
     contras: ['Añade peso y longitud en el extremo del arma', 'Se calienta mucho tras varios disparos', 'Más gases hacia el tirador y más ensuciamiento', 'Su compra y tenencia están reguladas o prohibidas en muchos países'],
-    ejemplos: 'SureFire SOCOM556, KAC QDC, Gemtech.',
     airsoft: 'Es sobre todo un accesorio de imitación: un tubo hueco que se enrosca en la rosca de 14 mm a izquierdas (CCW). Algunos llevan espuma que amortigua algo el escape en réplicas de gas, pero el ruido principal sale de la propia réplica y de la bola.',
     fuente: 'Wikipedia (Suppressor)' },
 
@@ -235,7 +236,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Permite seguir la trayectoria de la bola de noche', 'Ayuda a corregir el tiro', 'Muchos modelos tienen forma de falso supresor'],
     contras: ['Necesita bolas trazadoras, más caras', 'Revela desde dónde se dispara', 'Pilas aparte y peso en la boca del arma', 'Algunos campos la prohíben'],
-    ejemplos: 'Acetech Lighter S, Lighter M y Lighter BT.',
     airsoft: 'Todo el accesorio es de airsoft. Para que funcione hace falta una bola trazadora; con bolas normales solo hace de adorno.',
     fuente: 'Fabricantes y tiendas de airsoft (Acetech)' },
 
@@ -263,7 +263,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Identificar blancos en la oscuridad con las dos manos en el arma', 'Puede deslumbrar de forma temporal', 'Compacta y estanca'],
     contras: ['Delata la posición al encenderla', 'Añade ≈ 100–150 g en la parte delantera', 'Las pilas CR123A son caras y duran poco a máxima potencia'],
-    ejemplos: 'SureFire Scout M600 y M300, Streamlight TLR-1 (para pistola).',
     airsoft: 'Las réplicas copian a SureFire y Streamlight, con modelos de ≈ 100 a 1.000 lúmenes. Sirven sobre todo en partidas nocturnas y CQB. No hay que deslumbrar a otros jugadores a corta distancia, y algunos campos limitan los lúmenes o prohíben el estroboscopio.',
     fuente: 'Wikipedia (Tactical light)' },
 
@@ -285,7 +284,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Apuntado instintivo en espacios cerrados o en posiciones incómodas', 'Luz y láser en un solo accesorio', 'El láser verde se ve de día a mayor distancia'],
     contras: ['El punto delata tu posición y quien lo ve sabe dónde apuntas', 'El rojo se ve poco a pleno sol', 'Hay que ajustarlo a la distancia deseada y revisarlo con los golpes'],
-    ejemplos: 'SureFire X400, Streamlight TLR-2.',
     airsoft: 'Muchas réplicas incluyen láser rojo o verde de baja potencia. Muchos campos limitan o prohíben los láseres por seguridad ocular: nunca apuntes a la cara ni a los ojos de nadie.',
     fuente: 'Wikipedia (Laser sight, Tactical light)' },
 
@@ -308,7 +306,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Apunta y alumbra sin emitir luz visible', 'Láser rojo visible para ajustar de día', 'Muy robusto y de gran alcance'],
     contras: ['Voluminoso y pesado (≈ 200 g)', 'La luz IR se ve con visión nocturna: quien la lleve también te ve', 'Solo tiene sentido con gafas de visión nocturna', 'Equipo militar muy caro'],
-    ejemplos: 'AN/PEQ-15 ATPIAL, Steiner DBAL-A2.',
     airsoft: 'Casi siempre es una caja de imitación: lleva a lo sumo un láser rojo o verde de baja potencia y a veces una linterna. Se pone por aspecto y realismo; los láseres IR se venden aparte y solo sirven con visión nocturna.',
     fuente: 'Wikipedia (AN/PEQ-15)' },
 
@@ -329,7 +326,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Agarre firme de la mano de apoyo', 'Cómoda en disparos rápidos y en ráfagas', 'Mantiene el brazo en una posición constante'],
     contras: ['Sobresale: se engancha con la ropa y el equipo', 'Más alta y pesada que una empuñadura angulada', 'Si la mano resbala hacia delante, acaba cerca de la boca del cañón'],
-    ejemplos: 'Magpul MVG, Magpul RVG, Tango Down BG-16.',
     airsoft: 'Es un accesorio muy común. Hay modelos con compartimento para pilas y otros con bípode integrado. En CQB airsoft se prefieren las angulares por su perfil bajo.',
     fuente: 'Wikipedia (Foregrip)' },
 
@@ -349,7 +345,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Perfil bajo: casi no se engancha', 'Apoyo cómodo del pulgar y la palma', 'Rápida de usar en espacios cerrados'],
     contras: ['Menos palanca que una empuñadura vertical', 'Requiere habituarse a otra posición de la mano'],
-    ejemplos: 'Magpul AFG y AFG2.',
     airsoft: 'Es de los accesorios más baratos y fáciles de montar y se usa mucho por su perfil bajo. Vale para cualquier réplica con riel inferior.',
     fuente: 'Wikipedia (Foregrip)' },
 
@@ -370,7 +365,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Gran estabilidad y precisión', 'Menos fatiga en posición tumbada', 'Permite nivelar el arma en terreno irregular'],
     contras: ['Pesa y alarga el arma', 'Poco útil en movimiento o en espacios cerrados', 'Plegado, sobresale bajo el cañón y puede engancharse'],
-    ejemplos: 'Harris S-BRM, Atlas BT10, Magpul Bipod.',
     airsoft: 'Es habitual en réplicas de francotirador (VSR-10, L96) y en réplicas de tirador designado. Con una réplica de resorte de precisión, un bípode ayuda a tirar tumbado a 50–100 m. En una AEG corriente es casi un complemento estético.',
     fuente: 'Wikipedia (Bipod)' },
 
@@ -395,7 +389,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Más control y comodidad con la mano de disparo', 'Intercambiable entre casi todos los AR', 'Algunas llevan hueco de almacenamiento'],
     contras: ['El ángulo y el grosor son personales: lo que va bien a uno puede no ir a otro', 'Las más anchas pueden resultar grandes para manos pequeñas'],
-    ejemplos: 'A2 de Colt, Magpul MOE y MIAD, HK Battle grip V2.',
     airsoft: 'En las AEG de tipo M4 la empuñadura aloja el motor: casi todas las de formato M4 valen, pero hay que comprobar que el motor cabe (algunas son más estrechas).',
     fuente: 'Wikipedia (M16 rifle, HK416)' },
 
@@ -417,7 +410,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Robusta y sencilla', 'La del AK-12 es más cómoda y guarda el estuche', 'Piezas de repuesto muy abundantes'],
     contras: ['La clásica es de perfil recto y menos cómoda', 'La sujeta un único tornillo: conviene revisarlo'],
-    ejemplos: 'Empuñadura de baquelita del AKM, de polímero del AK-74M y del AK-12.',
     airsoft: 'En las AEG de tipo AK la empuñadura aloja el motor; hay modelos más grandes para motores largos. Cada marca tiene sus medidas, así que hay que comprobar que es compatible con la réplica.',
     fuente: 'Wikipedia (AK-12)' },
 
@@ -442,7 +434,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Recarga rápida: se cambia en ≈ 1–2 s', 'El extendido añade capacidad sin cambiar de arma'],
     contras: ['El extendido sobresale y es más difícil de ocultar', 'Los muelles se fatigan con el uso', 'Un cargador defectuoso es una causa frecuente de fallos de alimentación'],
-    ejemplos: 'Cargadores de Glock 17 (17 y 33 cartuchos), Beretta M9 (15), Tokyo Marui Hi-Capa (airsoft).',
     airsoft: 'En las réplicas de gas (GBB) el cargador es también el depósito de gas: guarda de ≈ 20 a 31 bolas, y cada fabricante usa su formato. El de Tokyo Marui es el estándar de facto de las Hi-Capa y de las Glock.',
     fuente: 'Wikipedia (Magazine (firearms))' },
 
@@ -466,7 +457,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Estándar universal: vale en cientos de armas', 'Ligero y barato (aluminio)', 'El de acero soporta bien golpes y calor'],
     contras: ['Los labios de aluminio se deforman con el uso', 'Sin ventana: no ves cuántos cartuchos quedan', 'El de acero pesa más del doble'],
-    ejemplos: 'Cargador de dotación de 30 en aluminio, cargador de acero del HK416.',
     airsoft: 'Las AEG de tipo M4 usan cargadores del mismo formato, pero con capacidades distintas: «real-cap» (≈ 30 bolas), «mid-cap» (≈ 120) y «hi-cap» (≈ 300 o más). Los metálicos aguantan mejor los golpes que los de polímero.',
     fuente: 'Wikipedia (STANAG magazine, HK416)' },
 
@@ -487,7 +477,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Resistente a golpes, óxido y barro', 'Elevador antibasculante: alimenta mejor', 'Ventana para controlar los cartuchos'],
     contras: ['Algo más grueso que el de aluminio', 'Más caro que un cargador de dotación', 'Con los años, el polímero puede degradarse con calor y exposición solar extremos'],
-    ejemplos: 'Magpul PMAG 30 GEN M3, Lancer L5AWM (translúcido).',
     airsoft: 'Los PMAG son de los cargadores de airsoft más comunes: se venden «real-cap» y de gran capacidad, con la forma y a menudo la ventana del original, y en varios colores para combinar con la réplica.',
     fuente: 'Wikipedia (STANAG magazine, Magpul PMAG)' },
 
@@ -505,7 +494,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Más corto: cómodo al disparar tumbado', 'Menos voluminoso en el equipo', 'Misma boca que el de 30'],
     contras: ['Un tercio menos de munición', 'Más recargas en un tiroteo largo'],
-    ejemplos: 'Cargador de aluminio de 20 del M16.',
     airsoft: 'Los cargadores «real-cap» de 20–30 bolas copian este formato y gustan a quien busca realismo y limitar la munición.',
     fuente: 'Wikipedia (STANAG magazine, M16 rifle)' },
 
@@ -524,7 +512,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Gran capacidad (hasta 100 cartuchos)', 'Pocas recargas en fuego de supresión'],
     contras: ['Muy pesado y voluminoso', 'Suele ser menos fiable que un cargador de caja', 'Incómodo para disparar tumbado', 'Lento de cargar'],
-    ejemplos: 'Beta C-Mag (100 cartuchos).',
     airsoft: 'Los tambores de airsoft son muy populares: guardan de ≈ 500 a 2.000 bolas y se alimentan con una rueda o un motor eléctrico. Son pesados y llamativos, y el alimentador hace ruido.',
     fuente: 'Wikipedia (Beta C-Mag, Magazine (firearms))' },
 
@@ -548,7 +535,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Muy robusto: soporta golpes y suciedad', 'Ligero (polímero)', 'El del AK-12 permite ver cuántos cartuchos quedan'],
     contras: ['Curvo y voluminoso en el chaleco', 'No intercambiable con los de 7,62×39'],
-    ejemplos: 'Cargador ciruela del AK-74, polímero negro del AK-74M, cargador del AK-12.',
     airsoft: 'Las AEG de tipo AK tienen cargadores «real-cap» (≈ 30 bolas), «mid-cap» (≈ 120–150) y «hi-cap» (≈ 300–500). Los de acero son más duraderos; los de polímero copian la silueta del cargador moderno.',
     fuente: 'Wikipedia (AK-74, AK-12)' },
 
@@ -568,7 +554,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Alimenta un cartucho potente y de largo alcance', 'Compacto para el calibre'],
     contras: ['Solo 20 cartuchos', 'Más pesado: ≈ 0,5 kg de munición', 'Exclusivo del SCAR-H'],
-    ejemplos: 'Cargador de 20 del FN SCAR-H.',
     airsoft: 'Los cargadores de las SCAR-H de airsoft son específicos de cada marca; conviene mirar cuántas bolas caben realmente antes de comprarlos.',
     fuente: 'Wikipedia (FN SCAR)' },
 
@@ -587,7 +572,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['35 cartuchos: más que un STANAG de 30'],
     contras: ['Formato propio: solo vale en el Galil', 'Más largo y curvo: más voluminoso', 'Más difícil de encontrar que un STANAG'],
-    ejemplos: 'Cargador Galil de 35 y de 50.',
     airsoft: 'Las réplicas del Galil ACE usan cargadores de formato propio y hay pocas alternativas.',
     fuente: 'Wikipedia (IWI Galil ACE)' },
 
@@ -606,7 +590,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Se ve el nivel de munición', 'Se pueden unir dos cargadores para recargar más rápido', 'Ligero y resistente a los golpes'],
     contras: ['Formato propio: no es STANAG', 'Acoplados, el conjunto es más ancho y la boca libre se ensucia'],
-    ejemplos: 'Cargador de 30 del G36 y Beta C-Mag de 100.',
     airsoft: 'Las réplicas del G36 de airsoft usan cargadores de formato propio, a menudo translúcidos para ver las bolas; los salientes de acoplamiento también se copian.',
     fuente: 'Wikipedia (Heckler & Koch G36)' },
 
@@ -629,7 +612,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Recarga rápida', 'El curvo da 30 cartuchos', 'El recto es más sencillo de llevar en el equipo'],
     contras: ['Poco intercambiables entre modelos', 'El curvo es más voluminoso en el equipo'],
-    ejemplos: 'MP5 (15 y 30), Uzi (25 y 32).',
     airsoft: 'Las réplicas AEG de MP5 y otros subfusiles usan cargadores curvos «mid-cap» o «real-cap» (≈ 70 a 120 bolas); algunas versiones de gas llevan cargadores de gas propios.',
     fuente: 'Wikipedia (Heckler & Koch MP5, Uzi)' },
 
@@ -648,7 +630,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Recarga muy rápida', 'Sin cambiar de arma ni de sistema'],
     contras: ['Más ancho y voluminoso: se engancha con el equipo', 'La boca del cargador libre queda expuesta a la suciedad', 'Se vuelve difícil disparar tumbado'],
-    ejemplos: 'Abrazaderas comerciales para MP5 y AR-15; G36 (salientes de serie).',
     airsoft: 'Es una modificación habitual en las AEG. Las abrazaderas cuestan poco, pero conviene comprobar que el conjunto no roza con el cuerpo de la réplica.',
     fuente: 'Wikipedia (Magazine (firearms), Heckler & Koch G36)' },
 
@@ -674,7 +655,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Se adapta a cada tirador y a su equipo', 'Corta para vehículos y espacios cerrados', 'Muy extendida: hay cientos de modelos'],
     contras: ['Menos rígida que una culata fija', 'Puede quedar holgura si el tubo no coincide', 'Con la longitud mínima, el apoyo de mejilla es peor'],
-    ejemplos: 'Culata del M4 (Colt), Magpul CTR y MOE, culata estándar del HK416.',
     airsoft: 'Casi todas las AEG de tipo M4 llevan culata telescópica de seis posiciones y admiten culatas del mismo formato. Algunas esconden la batería en el tubo: conviene que el compartimento sea el adecuado para tu batería.',
     fuente: 'Wikipedia (M4 carbine, HK416)' },
 
@@ -693,7 +673,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Rígida y estable', 'Apoyo de mejilla repetible en cada disparo', 'Más masa: amortigua el retroceso'],
     contras: ['No se adapta a otros tiradores ni al equipo', 'Más larga y pesada', 'Incómoda en espacios cerrados'],
-    ejemplos: 'Culata A2 del M16A2.',
     airsoft: 'En las AEG, la culata fija de rifle permite alojar baterías de gran tamaño. Es la habitual en las réplicas del M16A2.',
     fuente: 'Wikipedia (M16 rifle)' },
 
@@ -749,7 +728,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Apoyo estable y repetible', 'Perfil estrecho: no se engancha', 'Sin piezas móviles'],
     contras: ['Longitud fija: no se adapta al tirador', 'Sin hueco de almacenamiento'],
-    ejemplos: 'Culata del HK416A5 y del G28.',
     airsoft: 'Las réplicas del HK416A5 la copian. Al ser fija, no se puede ajustar la longitud.',
     fuente: 'Wikipedia (HK416)' },
 
@@ -768,7 +746,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Muy compacta al plegarla', 'Ligera', 'Se despliega rápido'],
     contras: ['Algo menos rígida que una fija', 'Puede aflojarse con el uso', 'No se ajusta a la longitud del tirador'],
-    ejemplos: 'CZ Scorpion EVO 3, MP5K-PDW.',
     airsoft: 'Es típica de las réplicas de subfusil compacto. La bisagra puede ser de plástico o de metal; las metálicas aguantan mejor el uso.',
     fuente: 'Wikipedia (Stock (firearm))' },
 
@@ -787,7 +764,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Muy ligera y sencilla', 'Barata de fabricar', 'Plegada, apenas ocupa'],
     contras: ['Poco cómoda: la placa estrecha se clava en el hombro', 'Apoyo poco estable', 'La holgura crece con el uso'],
-    ejemplos: 'Uzi, MP40, MAC-10.',
     airsoft: 'Se ve en réplicas de Uzi, MAC-10 y MP40. Las de plástico pesan menos pero se doblan; las de metal son más realistas.',
     fuente: 'Wikipedia (Uzi, Stock (firearm))' },
 
@@ -806,7 +782,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Plegable: acorta el arma', 'Robusta y de polímero resistente'],
     contras: ['Longitud fija: no se ajusta al tirador'],
-    ejemplos: 'AK-74M.',
     airsoft: 'Las réplicas de AK-74M copian su aspecto. La batería suele ir en el guardamanos.',
     fuente: 'Wikipedia (AK-74)' },
 
@@ -826,7 +801,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Regulable en longitud', 'Plegable al lateral', 'Admite apoyo de mejilla'],
     contras: ['Más compleja y pesada que una culata fija'],
-    ejemplos: 'AK-12.',
     airsoft: 'Las AEG del AK-12 copian su silueta. Conviene mirar si la tuya permite ajustar la longitud, porque algunas la llevan fija.',
     fuente: 'Wikipedia (AK-12)' },
 
@@ -846,7 +820,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Se pliega y se regula en longitud', 'Mejilla ajustable para la óptica'],
     contras: ['Pesada (≈ 450 g)', 'Más piezas móviles que una culata fija'],
-    ejemplos: 'FN SCAR-L, SCAR-H, SCAR-PR y SCAR-TPR.',
     airsoft: 'Las SCAR de airsoft copian la culata plegable y regulable, una de las partes más reconocibles de la réplica.',
     fuente: 'Wikipedia (FN SCAR)' },
 
@@ -866,7 +839,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Ligera y resistente a la corrosión', 'Plegable', 'Guarda los pasadores de montaje'],
     contras: ['Longitud fija en la versión estándar'],
-    ejemplos: 'G36, G36KA4 (culata regulable).',
     airsoft: 'Las réplicas del G36 reproducen la forma de esqueleto; no todas son plegables.',
     fuente: 'Wikipedia (Heckler & Koch G36)' },
 
@@ -886,7 +858,6 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Plegable y regulable en longitud', 'Desmontable'],
     contras: ['Más compleja y pesada que una fija'],
-    ejemplos: 'CZ BREN 2, CZ BREN 3.',
     airsoft: 'Las réplicas del BREN 2 copian la culata plegable.',
     fuente: 'Wikipedia (CZ BREN 2)' },
 
@@ -905,13 +876,12 @@ const FICHAS: Accesorio[] = [
     ],
     pros: ['Plegable y regulable en longitud', 'Ligera'],
     contras: ['Dos varillas: menos apoyo en el hombro que una culata sólida'],
-    ejemplos: 'SIG MCX Virtus Patrol, SPEAR LT.',
     airsoft: 'Las réplicas de la MCX copian su culata plegable.',
     fuente: 'Wikipedia (SIG MCX)' },
 ];
 
-/** Fichas con su foto (accesorios-fotos.ts), si la tienen. */
-export const ACCESORIOS: Accesorio[] = FICHAS.map(a => ({ ...a, foto: FOTOS[a.id] }));
+/** Fichas con su foto (accesorios-fotos.ts) y sus nombres técnicos y modelos (accesorios-nombres.ts). */
+export const ACCESORIOS: Accesorio[] = FICHAS.map(a => ({ ...a, ...NOMBRES_ACC[a.id], foto: FOTOS[a.id] }));
 
 /* ── Búsqueda e índices ── */
 export const accById = (id: string) => ACCESORIOS.find(a => a.id === id);
@@ -919,4 +889,8 @@ export const accById = (id: string) => ACCESORIOS.find(a => a.id === id);
 export const accDePieza = (parte: string) => ACCESORIOS.find(a => a.partes.includes(parte));
 /** Id de pieza → id de ficha: lo usa el constructor para enlazar a la ficha técnica sin importar toda la lista. */
 export const ACC_POR_PIEZA: Record<string, string> = Object.fromEntries(ACCESORIOS.flatMap(a => a.partes.map(p => [p, a.id])));
+/** Todo el texto visible de una ficha de accesorio: sirve para detectar qué términos del glosario aparecen en ella. */
+export const textoAcc = (a: Accesorio): string => [
+  a.resumen, ...a.clave.flat(), ...a.datos.flat(), ...a.como, ...(a.variantes?.flat() ?? []), ...a.pros, ...a.contras, a.airsoft,
+].join('\n');
 export const accDelGrupo = (g: GrupoAcc) => ACCESORIOS.filter(a => a.grupo === g);

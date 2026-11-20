@@ -5,9 +5,10 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
-import type { ArmaCard } from '@/three/data/armas';
+import type { ArmaCard } from '@/catalogo/tipos';
 import { ArmasLista } from './ArmasLista';
 import { IconSearch } from './icons';
+import { ENABLE_3D } from '@/config';
 
 type Orden = 'familia' | 'nombre' | 'fabricante' | 'pais';
 const ORDENES: [Orden, string][] = [['familia', 'Por familia'], ['nombre', 'Nombre (A–Z)'], ['fabricante', 'Fabricante'], ['pais', 'País']];
@@ -62,13 +63,13 @@ export default function ArmasBuscador({ cards, groups }: { cards: ArmaCard[]; gr
     const r = cards.filter(c =>
       (!nq || norm(`${c.name} ${c.maker} ${c.variants.join(' ')} ${c.calibre ?? ''}`).includes(nq)) &&
       (!e.calibre || c.calibres.includes(e.calibre)) && (!e.grupo || c.group === e.grupo) &&
-      (!e.pais || c.pais === e.pais) && (!e.solo3d || c.has3d));
+      (!e.pais || c.pais === e.pais) && (!ENABLE_3D || !e.solo3d || c.has3d));
     if (e.orden === 'familia') return r;
     const key = (c: ArmaCard) => (e.orden === 'nombre' ? c.name : e.orden === 'fabricante' ? c.maker : c.pais ?? '~');
     return [...r].sort((a, b) => key(a).localeCompare(key(b), 'es', { numeric: true }) || a.name.localeCompare(b.name, 'es', { numeric: true }));
   }, [cards, nq, e.calibre, e.grupo, e.pais, e.solo3d, e.orden]);
 
-  const activos = [e.calibre, e.grupo, e.pais].filter(Boolean).length + (e.solo3d ? 1 : 0);
+  const activos = [e.calibre, e.grupo, e.pais].filter(Boolean).length + (ENABLE_3D && e.solo3d ? 1 : 0);
   const fuera = `/armas/buscar/?q=${encodeURIComponent(e.q.trim())}`;
   const toggle = (id: string) => set({ cmp: e.cmp.includes(id) ? e.cmp.filter(x => x !== id) : [...e.cmp, id].slice(0, MAX_CMP) });
   const limpiar = () => set({ calibre: '', grupo: '', pais: '', solo3d: false });
@@ -94,7 +95,7 @@ export default function ArmasBuscador({ cards, groups }: { cards: ArmaCard[]; gr
           <option value="">País</option>
           {opciones.paises.map(([k, n]) => <option key={k} value={k}>{k} ({n})</option>)}
         </Select>
-        <button type="button" className="wchip" aria-pressed={e.solo3d} onClick={() => set({ solo3d: !e.solo3d })}>Montable en 3D</button>
+        {ENABLE_3D && <button type="button" className="wchip" aria-pressed={e.solo3d} onClick={() => set({ solo3d: !e.solo3d })}>Montable en 3D</button>}
         <Select label="Ordenar por" value={e.orden === 'familia' ? '' : e.orden} onChange={v => set({ orden: (v || 'familia') as Orden })}>
           {ORDENES.map(([k, l]) => <option key={k} value={k === 'familia' ? '' : k}>{k === 'familia' ? 'Orden: por familia' : `Orden: ${l.toLowerCase()}`}</option>)}
         </Select>

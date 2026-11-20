@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'reac
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { IconSearch } from './icons';
+import { ENABLE_3D } from '@/config';
 
 type Tipo = 'arma' | 'accesorio' | 'municion' | 'glosario';
 interface Entrada { t: Tipo; h: string; n: string; s: string; k: string }
@@ -17,7 +18,7 @@ const SECCIONES: { h: string; n: string; s: string }[] = [
   { h: '/accesorios/', n: 'Accesorios', s: 'Miras, bocachas, luces, empuñaduras, cargadores y culatas' },
   { h: '/balas/', n: 'Balas', s: 'Cartuchos y bola de 6 mm' },
   { h: '/sistemas/', n: 'Glosario', s: 'Qué significan los sistemas y términos de las fichas' },
-  { h: '/montar/', n: 'Montar en 3D', s: 'Configura un arma con accesorios' },
+  ...(ENABLE_3D ? [{ h: '/montar/', n: 'Montar en 3D', s: 'Configura un arma con accesorios' }] : []),
 ];
 
 /** Sin tildes ni mayúsculas, y con «5,56×45» comparable con «5.56x45». */

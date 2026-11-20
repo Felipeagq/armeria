@@ -423,6 +423,46 @@ function buildBREN(o: Opts) {
   };
 }
 
+/* ───────────────────────── IWI Tavor TAR-21 (bullpup) ───────────────────────── */
+// Origen en el gatillo: el cargador va DETRÁS de la empuñadura y la culata es parte del cajón.
+// o.hgEnd = frente del cajón (x); o.muzzle = fin del cañón (donde se monta el apagallamas).
+function buildTAVOR(o: Opts) {
+  return (b: Builder) => {
+    const f = o.hgEnd;
+    // cajón de polímero: culata, receptor y guardamanos en una sola pieza
+    b.add(ext('tavbody' + f, s => {
+      s.moveTo(-4.07, 1.46); s.lineTo(-4.0, 1.58); s.lineTo(-2.0, 1.58); s.lineTo(-1.0, 1.4); s.lineTo(f - .05, 1.38); s.quadraticCurveTo(f, 1.38, f, 1.32);
+      s.lineTo(f, .56); s.quadraticCurveTo(f, .47, f - .09, .47); s.lineTo(-1.0, .47); s.lineTo(-1.25, .37); s.lineTo(-2.4, .37);
+      s.lineTo(-3.9, .1); s.lineTo(-4.0, .12); s.lineTo(-4.07, .2); s.closePath();
+    }, .44, .02), 'body');
+    // empuñadura con guardamonte grande (aro único)
+    b.add(ext('tavloop', poly([[.6, .52], [-1.0, .52], [-1.1, -.05], [-.8, -.3], [-.35, -.4], [-.1, -.36]], [[[.3, .45], [-.62, .45], [-.78, .0], [-.5, -.2], [-.22, -.27]]]), .3, .02), 'body');
+    b.add(ext('tavgrip', poly([[-.7, .3], [-.98, .3], [-1.04, .0], [-.76, -.1]]), .31, .012), 'grip');
+    trigger(b, 0, .42);
+    // cajón superior de metal (negro), más ancho que el polímero: aquí van las aberturas y la ventana larga
+    b.add(box(f + 1.0, .28, .5, .03), 'dark', (f - 1.0) / 2, 1.24, 0);
+    // aberturas inclinadas de la zona del cerrojo (ambos lados)
+    for (let i = 0; i < 4; i++) for (const z of [.262, -.262]) b.add(slot(.2, .06), 'hole', -.05 - i * .26, 1.2, z, 0, 0, -.7);
+    // ventana larga del guardamanos y manija de carga delantera
+    for (const z of [.262, -.262]) b.add(box(f - .6, .06, .01, .004), 'hole', (f + .4) / 2 - .05, 1.28, z);
+    b.add(box(.09, .24, .08, .015), 'steel', f - .12, 1.22, -.3);
+    // selector y marcas en el lado izquierdo
+    b.add(box(.14, .05, .03, .01), 'dark', -.41, .82, -.255, 0, 0, .3);
+    for (const [dx, dy] of [[-.06, .06], [0, .09], [.06, .06]]) paintDot(b, -.41 + dx, .82 + dy, -.274);
+    // brocal del cargador, ventana oscura de la culata y culatín
+    b.add(box(.64, .03, .36, .01), 'dark', -2.1, .375, 0);
+    for (const z of [.246, -.246]) b.add(box(.9, .14, .012, .004), 'dark', -2.25, 1.05, z);
+    b.add(ext('tavpad', poly([[0, 1.47], [.07, 1.47], [.07, .14], [0, .16]]), .46, .02), 'rubber', -4.1, 0, 0);
+    b.pin(-.9, .66, .25, .03); b.pin(-3.2, .9, .25, .03);
+    // rieles: superior corrido y corto inferior; riel lateral para accesorios
+    b.rail(f + 1.0, (f - 1.0) / 2, 1.38, 1, null, true);
+    b.rail(.6, f - .6, .47, -1);
+    sideRail(b, f - .6, .5, .235, .85);
+    barrel(b, f - .1, o.muzzle, .08, 'tav');
+    foldSight(b, f - .2, 1.46, true); foldSight(b, -.9, 1.46, false);
+  };
+}
+
 /* ───────────────────────── Fichas técnicas ───────────────────────── */
 const AIRSOFT_AR = 'AEG con gearbox V2, cargadores tipo M4; también GBB';
 const AIRSOFT_AK = 'AEG con gearbox V3, cargadores tipo AK';
@@ -498,6 +538,15 @@ export const MODELS: Model[] = [
       { id: '22', name: 'ACE 22 13"', barrel: 13, color: 'negro', specs: { peso: '3,4 kg', cañon: '335 mm (13,2")', velocidad: '850 m/s' }, o: { hgEnd: 3.1, muzzle: 4.4 } },
       { id: '23', name: 'ACE 23 18"', barrel: 18, color: 'negro', specs: { peso: '3,6 kg', cañon: '463 mm (18,2")', velocidad: '915 m/s' }, o: { hgEnd: 3.1, muzzle: 5.68 } },
     ] },
+  { id: 'cordova', name: 'Galil Córdova', maker: 'INDUMIL · Colombia', group: 'Familia Kalashnikov',
+    common: { calibre: '5,56×45 mm NATO', sistema: 'Recarga por gas · cerrojo rotativo (mecanismo Galil, de la familia Kalashnikov)', cadencia: '650–750 disp./min (según la fuente)', alcance: '≈ 500 m (según Wikipedia)', cargador: 'Galil curvo de 35 cartuchos', peso: 'No publicado en las fuentes consultadas',
+      extra: 'Fabricado por INDUMIL a partir del Galil AR/SAR (modernización con culata telescópica y rieles Picatinny). Uno de los fusiles principales de las Fuerzas Militares y la Policía Nacional de Colombia (según Wikipedia). Su nombre honra al héroe José María Córdova',
+      fuente: 'Wikipedia (Galil Córdova, en/es), INDUMIL' },
+    variants: [
+      { id: '8', name: 'Córdova 8"', barrel: 8, color: 'negro', specs: { cañon: '203 mm (8")' }, o: { hgEnd: 2.6, muzzle: 3.08 }, defaults: { under: 'ul_vfg' } },
+      { id: '13', name: 'Córdova 13"', barrel: 13, color: 'negro', specs: { cañon: '330 mm (13")' }, o: { hgEnd: 3.1, muzzle: 4.35 }, defaults: { under: 'ul_vfg' } },
+      { id: '18', name: 'Córdova 18"', barrel: 18, color: 'negro', specs: { cañon: '457 mm (18")', velocidad: '≈ 915 m/s (dato de Wikipedia, sin confirmar por el fabricante)' }, o: { hgEnd: 3.1, muzzle: 5.62 }, defaults: { under: 'ul_vfg' } },
+    ] },
   { id: 'scar', name: 'FN SCAR', maker: 'FN Herstal · Bélgica', group: 'Otros',
     common: { sistema: 'Pistón de recorrido corto · cerrojo rotativo', airsoft: 'AEG (gearbox propio/V2 modificado según fabricante) y GBB', fuente: 'FN America (catálogo), Wikipedia' },
     variants: [
@@ -518,6 +567,13 @@ export const MODELS: Model[] = [
       { id: '8', name: '8"', barrel: 8, color: 'od', specs: { peso: '≈ 2,9 kg', cañon: '207 mm (8,1")', velocidad: 'No publicada' }, o: { hgEnd: 2.75, muzzle: 3.0 } },
       { id: '11', name: '11"', barrel: 11, color: 'od', specs: { peso: '3,05 kg', cañon: '280 mm (11")', velocidad: 'No publicada' }, o: { hgEnd: 3.4, muzzle: 3.75 } },
       { id: '14', name: '14"', barrel: 14, color: 'od', specs: { peso: '≈ 3,1 kg', cañon: '356 mm (14")', velocidad: 'No publicada' }, o: { hgEnd: 3.9, muzzle: 4.5 } },
+    ] },
+  { id: 'tavor', name: 'IWI Tavor TAR-21', maker: 'IWI (Israel Weapon Industries) · Israel', group: 'Otros',
+    common: { calibre: '5,56×45 mm NATO', sistema: 'Pistón de recorrido largo · cerrojo rotativo cerrado · configuración bullpup (cargador tras la empuñadura)', cadencia: '750–950 disp./min', alcance: '550 m', cargador: 'STANAG de 30 cartuchos',
+      fuente: 'Wikipedia (IWI Tavor), Modern Firearms (vía Wikipedia)' },
+    variants: [
+      { id: 'tar21', name: 'TAR-21', barrel: 18, color: 'od', specs: { peso: '3,27 kg', cañon: '457 mm (18")', velocidad: '910 m/s', extra: 'Longitud total 720 mm con cañón de 18". Usado por fuerzas especiales y la Policía Nacional de Colombia (según Wikipedia)' }, o: { hgEnd: 1.89, muzzle: 2.71 }, defaults: { mag: 'rmag_metal', muzzle: 'mz_flash' } },
+      { id: 'ctar21', name: 'CTAR-21', barrel: 15, color: 'negro', specs: { peso: 'No publicado en la fuente consultada', cañon: '380 mm (15")', extra: 'Versión compacta para comandos y fuerzas especiales; más extendida que la TAR-21 estándar en las FDI (según Wikipedia). Usado por fuerzas especiales y la Policía Nacional de Colombia (según Wikipedia)' }, o: { hgEnd: 1.09, muzzle: 1.91 }, defaults: { mag: 'rmag_metal', muzzle: 'mz_flash' } },
     ] },
 ];
 
@@ -553,7 +609,7 @@ function platformFor(model: Model, v: Variant): [string, Platform] | null {
         { id: 'stock', type: 'stock', pos: [-1.24, .95, 0], explode: EXP.stock },
         { id: 'grip', type: 'grip', pos: [-.32, .58, 0], rot: [0, 0, -.28], explode: EXP.grip },
       ] }];
-    case 'ace': return [id, { ...base, build: buildACE(o), tags: ['long', 'long-rifle', 'galil-mag', 'ar-tube'], defaults: { mag: 'mag_galil', stock: 'rstock_ret', muzzle: 'mz_flash', ...d },
+    case 'ace': case 'cordova': return [id, { ...base, build: buildACE(o), tags: ['long', 'long-rifle', 'galil-mag', 'ar-tube'], defaults: { mag: 'mag_galil', stock: 'rstock_ret', muzzle: 'mz_flash', ...d },
       slots: [
         { id: 'optic', type: 'optic', pos: [-.2, 1.26, 0], explode: EXP.optic },
         { id: 'muzzle', type: 'muzzle', pos: [o.muzzle, 1, 0], explode: EXP.muzzle },
@@ -582,6 +638,14 @@ function platformFor(model: Model, v: Variant): [string, Platform] | null {
         { id: 'under', type: 'under', pos: [o.hgEnd - .35, .65, 0], explode: EXP.under },
         { id: 'mag', type: 'mag', pos: [.6, .37, 0], explode: EXP.mag },
         { id: 'stock', type: 'stock', pos: [-1.32, 1.0, 0], explode: EXP.stock },
+      ] }];
+    case 'tavor': return [id, { ...base, build: buildTAVOR(o), tags: ['long', 'long-rifle', 'stanag'], defaults: d,
+      slots: [
+        { id: 'optic', type: 'optic', pos: [-.25, 1.47, 0], explode: EXP.optic },
+        { id: 'muzzle', type: 'muzzle', pos: [o.muzzle, 1, 0], explode: EXP.muzzle },
+        { id: 'under', type: 'under', pos: [o.hgEnd - .6, .38, 0], explode: EXP.under },
+        { id: 'side', type: 'side', pos: [o.hgEnd - .6, .85, .325], explode: EXP.side },
+        { id: 'mag', type: 'mag', pos: [-2.1, .62, 0], explode: EXP.mag },
       ] }];
     case 'bren2': return [id, { ...base, build: buildBREN(o), tags: ['long', 'long-rifle', 'stanag', 'bren-stock'], defaults: { mag: 'rmag_poly', stock: 'stock_bren', muzzle: 'mz_flash' },
       slots: [

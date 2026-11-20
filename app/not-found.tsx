@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import SiteNav from '@/components/SiteNav';
 import SiteFooter from '@/components/SiteFooter';
+import { ENABLE_3D } from '@/config';
 
 export const metadata: Metadata = { title: 'Página no encontrada' };
 
@@ -11,7 +12,7 @@ const SECCIONES: [href: string, nombre: string, desc: string][] = [
   ['/accesorios/', 'Accesorios', 'Miras, bocachas, luces, empuñaduras, cargadores y culatas.'],
   ['/balas/', 'Balas', 'Cartuchos de las armas del catálogo y la bola de 6 mm.'],
   ['/sistemas/', 'Glosario', 'Qué significan los sistemas, cerrojos y términos de las fichas.'],
-  ['/montar/', 'Montar en 3D', 'Configura un arma con accesorios y expórtala.'],
+  ...(ENABLE_3D ? [['/montar/', 'Montar en 3D', 'Configura un arma con accesorios y expórtala.'] as [string, string, string]] : []),
 ];
 
 export default function NotFound() {
